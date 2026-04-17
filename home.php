@@ -9,8 +9,8 @@ error_reporting(E_ALL);
 // ==========================================
 $host   = "127.0.0.1";
 $user   = "root";
-$pass   = "root1234";
-$dbname = "is_internships";
+$pass   = "";
+$dbname = "is_internship";
 $port   = 3306;
 
 $conn = new mysqli($host, $user, $pass, $dbname, $port);
@@ -231,21 +231,43 @@ function renderContactFooter() {
         .faculty-footer h3 { margin-top:0; }
         .inline-form { display:inline; }
 
-        /* PR Post styles */
-        .pr-post { background:#fff; border:1px solid #e2e8f0; border-radius:12px; margin-bottom:20px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
-        .pr-post-header { display:flex; align-items:center; gap:12px; padding:14px 16px 0 16px; }
-        .pr-post-avatar { width:40px; height:40px; border-radius:50%; background:#003366; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:14px; flex-shrink:0; }
-        .pr-post-account { font-weight:600; font-size:14px; color:#1e293b; }
-        .pr-post-date { font-size:12px; color:#94a3b8; }
-        .pr-post-img { width:100%; aspect-ratio:1/1; object-fit:cover; display:block; background:#e2e8f0; }
-        .pr-post-img-placeholder { width:100%; aspect-ratio:1/1; background:#f1f5f9; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:14px; }
-        .pr-post-body { padding:14px 16px 16px 16px; }
-        .pr-post-body .pr-tags { color:#003366; font-size:13px; font-weight:500; margin-bottom:6px; }
-        .pr-post-body .pr-text { font-size:14px; color:#334155; line-height:1.7; white-space:pre-line; }
-        .pr-post-body .pr-link { display:inline-block; margin-top:10px; color:#dc2626; font-size:13px; text-decoration:none; }
+        /* PR Post styles — minimal horizontal feed */
+        .pr-feed { display:flex; flex-direction:column; gap:0; }
+        .pr-post {
+            display:grid; grid-template-columns:140px 1fr;
+            border-bottom:1px solid #f1f5f9;
+            background:#fff; transition:background 0.15s;
+        }
+        .pr-post:last-child { border-bottom:none; }
+        .pr-post:hover { background:#fafbfc; }
+        .pr-post-thumb {
+            width:140px; height:140px; flex-shrink:0;
+            overflow:hidden; background:#f1f5f9;
+            display:flex; align-items:center; justify-content:center;
+        }
+        .pr-post-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+        .pr-post-thumb-placeholder {
+            width:100%; height:100%;
+            display:flex; align-items:center; justify-content:center;
+            color:#cbd5e1; font-size:13px;
+        }
+        .pr-post-body { padding:18px 22px; display:flex; flex-direction:column; justify-content:center; gap:6px; }
+        .pr-post-meta { display:flex; align-items:center; gap:10px; }
+        .pr-post-avatar { width:24px; height:24px; border-radius:50%; background:#1e293b; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:9px; flex-shrink:0; }
+        .pr-post-account { font-size:12px; font-weight:600; color:#64748b; }
+        .pr-post-date { font-size:11px; color:#cbd5e1; }
+        .pr-post-body .pr-tags { color:#003366; font-size:11px; font-weight:500; letter-spacing:0.01em; }
+        .pr-post-title { font-size:14px; font-weight:600; color:#1e293b; line-height:1.4; }
+        .pr-post-body .pr-text { font-size:13px; color:#64748b; line-height:1.6; white-space:pre-line; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .pr-post-body .pr-link { font-size:12px; color:#dc2626; text-decoration:none; font-weight:500; }
         .pr-post-body .pr-link:hover { text-decoration:underline; }
-        .pr-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
-        @media (max-width:700px) { .pr-grid { grid-template-columns:1fr; } .faculty-info { grid-template-columns:1fr; } }
+        /* legacy class no longer used but kept for compat */
+        .pr-grid { display:flex; flex-direction:column; }
+        @media (max-width:700px) {
+            .pr-post { grid-template-columns:100px 1fr; }
+            .pr-post-thumb { width:100px; height:100px; }
+            .faculty-info { grid-template-columns:1fr; }
+        }
     </style>
 </head>
 <body>
@@ -577,89 +599,69 @@ function renderContactFooter() {
                     </ul>
                 </div>
 
-                <!-- PR Posts แบบ IG -->
-                <div class="pr-grid">
+                <!-- PR Posts — minimal feed -->
+                <div class="card" style="padding:0; overflow:hidden; border-radius:8px 8px 0 0; margin-bottom:0;">
+                <div class="pr-feed">
 
                     <!-- โพสต์ที่ 1: IS111 กิจกรรมโต้วาที -->
                     <div class="pr-post">
-                        <div class="pr-post-header">
-                            <div class="pr-post-avatar">IS</div>
-                            <div>
-                                <div class="pr-post-account">is.hmswu</div>
-                                <div class="pr-post-date">6 กุมภาพันธ์ 2569</div>
-                            </div>
-                            </div>
-                        <div div class="is111img">
-                            im
+                        <div class="pr-post-thumb">
+                            <div class="pr-post-thumb-placeholder">ไม่มีรูปภาพ</div>
                         </div>
                         <div class="pr-post-body">
+                            <div class="pr-post-meta">
+                                <div class="pr-post-avatar">IS</div>
+                                <span class="pr-post-account">is.hmswu</span>
+                                <span class="pr-post-date">6 กุมภาพันธ์ 2569</span>
+                            </div>
                             <div class="pr-tags">#IS111 #สารสนเทศศึกษา #SWU</div>
-                            <div class="pr-text">📚 <strong>IS111 การรู้สารสนเทศและรู้เท่าทันสื่อ</strong>
-
-กิจกรรมโต้วาที ภาคเรียนที่ 1/2568
-หลักสูตรศิลปศาสตรบัณฑิต สาขาวิชาสารสนเทศศึกษา
-คณะมนุษยศาสตร์ มหาวิทยาลัยศรีนครินทรวิโรฒ</div>
-                            <a href="https://is.hu.swu.ac.th/is111/" target="_blank" class="pr-link">→ อ่านเพิ่มเติม</a>
+                            <div class="pr-post-title">IS111 การรู้สารสนเทศและรู้เท่าทันสื่อ</div>
+                            <div class="pr-text">กิจกรรมโต้วาที ภาคเรียนที่ 1/2568 หลักสูตรศิลปศาสตรบัณฑิต สาขาวิชาสารสนเทศศึกษา คณะมนุษยศาสตร์ มหาวิทยาลัยศรีนครินทรวิโรฒ</div>
+                            <a href="https://is.hu.swu.ac.th/is111/" target="_blank" class="pr-link">อ่านเพิ่มเติม →</a>
                         </div>
                     </div>
 
                     <!-- โพสต์ที่ 2: Government Data Catalog Day 2024 -->
                     <div class="pr-post">
-                        <div class="pr-post-header">
-                            <div class="pr-post-avatar">IS</div>
-                            <div>
-                                <div class="pr-post-account">is.hmswu</div>
-                                <div class="pr-post-date">21 กุมภาพันธ์ 2568</div>
-                            </div>
-                        </div>
-                        <div class="img2">
-                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2025/02/GDCatalog2-1140x458.jpg"
-                             alt="Government Data Catalog Day 2024" class="pr-post-img">
+                        <div class="pr-post-thumb">
+                            <img src="https://is.hu.swu.ac.th/wp-content/uploads/2025/02/GDCatalog2-1140x458.jpg" alt="Government Data Catalog Day 2024">
                         </div>
                         <div class="pr-post-body">
+                            <div class="pr-post-meta">
+                                <div class="pr-post-avatar">IS</div>
+                                <span class="pr-post-account">is.hmswu</span>
+                                <span class="pr-post-date">21 กุมภาพันธ์ 2568</span>
+                            </div>
                             <div class="pr-tags">#GDCatalog #OpenData #SWU #สารสนเทศศึกษา</div>
-                            <div class="pr-text">🏆 <strong>Government Data Catalog Day 2024: Insights and Impact</strong>
-
-เมื่อวันพุธที่ 19 กุมภาพันธ์ 2568 คณาจารย์หลักสูตรสารสนเทศศึกษา คณะมนุษยศาสตร์ มหาวิทยาลัยศรีนครินทรวิโรฒ เข้าร่วมงานประชุมสัมมนา Government Data Catalog Day 2024
-
-🎖️ สาขาวิชาสารสนเทศศึกษา มศว ได้รับรางวัลหน่วยงานทางด้านการศึกษาที่ใช้ข้อมูลสาธารณะจากภาครัฐดีเด่น</div>
-                            <a href="https://is.hu.swu.ac.th/gdcatalog/" target="_blank" class="pr-link">→ อ่านเพิ่มเติม</a>
+                            <div class="pr-post-title">Government Data Catalog Day 2024: Insights and Impact</div>
+                            <div class="pr-text">คณาจารย์หลักสูตรสารสนเทศศึกษา เข้าร่วมงานประชุมสัมมนา Government Data Catalog Day 2024 และได้รับรางวัลหน่วยงานด้านการศึกษาที่ใช้ข้อมูลสาธารณะจากภาครัฐดีเด่น</div>
+                            <a href="https://is.hu.swu.ac.th/gdcatalog/" target="_blank" class="pr-link">อ่านเพิ่มเติม →</a>
                         </div>
                     </div>
 
                 </div>
+                </div>
 
-                <!-- โพสต์ที่ 3: พัฒนาระบบสารสนเทศ (เต็มความกว้าง) -->
-                <div class="pr-post">
-                    <div class="pr-post-header">
-                        <div class="pr-post-avatar">IS</div>
-                        <div>
-                            <div class="pr-post-account">is.hmswu</div>
-                            <div class="pr-post-date">วันจันทร์ที่ 16 มีนาคม 2569</div>
+                <!-- โพสต์ที่ 3 แยก card (เต็มความกว้าง) รวมเข้า feed เดิม -->
+                <div class="card" style="padding:0; overflow:hidden; margin-top:0; border-top:none; border-radius:0 0 8px 8px; border-top:1px solid #f1f5f9;">
+                <div class="pr-feed">
+                    <div class="pr-post">
+                        <div class="pr-post-thumb">
+                            <img src="https://hu.swu.ac.th/Portals/5/EasyDNNNews/12571/600600p2228EDNmainimg-1611.jpg" alt="โครงการพัฒนาระบบสารสนเทศ">
+                        </div>
+                        <div class="pr-post-body">
+                            <div class="pr-post-meta">
+                                <div class="pr-post-avatar">IS</div>
+                                <span class="pr-post-account">is.hmswu</span>
+                                <span class="pr-post-date">16 มีนาคม 2569</span>
+                            </div>
+                            <div class="pr-tags">#HumanitiesSWU #DigitalTransformation #Automation #CyberSecurity</div>
+                            <div class="pr-post-title">โครงการ "พัฒนาระบบสารสนเทศเพื่อการบริหารจัดการองค์กร"</div>
+                            <div class="pr-text">คณะมนุษยศาสตร์ มหาวิทยาลัยศรีนครินทรวิโรฒ อบรมเชิงปฏิบัติการด้าน Automation, Workflow และ Cyber Security เพื่อเสริมทักษะการใช้เทคโนโลยีในการบริหารจัดการงาน</div>
+                            <a href="https://hu.swu.ac.th/news/โครงการ-พัฒนาระบบสารสนเทศเพื่อการบริหารจัดการองค์กร" target="_blank" class="pr-link">อ่านเพิ่มเติม →</a>
                         </div>
                     </div>
-                <div class="Img111">
-                    <img src="https://hu.swu.ac.th/Portals/5/EasyDNNNews/12571/600600p2228EDNmainimg-1611.jpg" alt="img111">
                 </div>
-                    <div class="pr-post-body">
-                        <div class="pr-tags">#HumanitiesSWU #DigitalTransformation #Automation #CyberSecurity</div>
-                        <div class="pr-text">🖥️ <strong>โครงการ "พัฒนาระบบสารสนเทศเพื่อการบริหารจัดการองค์กร"</strong>
-คณะมนุษยศาสตร์ มหาวิทยาลัยศรีนครินทรวิโรฒ
-📍 ห้อง 38-0301 ชั้น 3 อาคาร 38 คณะมนุษยศาสตร์
-
-โดยได้รับเกียรติจาก ผู้ช่วยศาสตราจารย์ ดร.อัญชลี จันทร์เสม คณบดีคณะมนุษยศาสตร์ กล่าวเปิดโครงการ
-
-ภายในกิจกรรมมีการอบรมเชิงปฏิบัติการเกี่ยวกับ Automation, Workflow และ Cyber Security เพื่อเสริมทักษะการใช้เทคโนโลยีในการบริหารจัดการงานและการใช้ระบบสารสนเทศอย่างปลอดภัย
-
-ขอขอบพระคุณวิทยากรจากสาขาวิชาสารสนเทศศึกษา ได้แก่
-🖥️ อาจารย์ ดร.ดิษฐ์ สุทธิวงศ์
-🖥️ ผู้ช่วยศาสตราจารย์ ดร.วิภากร วัฒนสินธุ์
-🖥️ ผู้ช่วยศาสตราจารย์ ดร.ดุษฎี สีวังคำ
-🖥️ อาจารย์ ดร.โชคธำรงค์ จงจอหอ
-🖥️ อาจารย์ ดร.ฐิติ อติชาติชยากร
-
-ที่ได้ร่วมถ่ายทอดความรู้และประสบการณ์แก่บุคลากรของคณะ เพื่อสนับสนุนการพัฒนาองค์กรสู่ Digital Organization</div>
-                    </div>
                 </div>
 
                 <?php renderContactFooter();
@@ -748,6 +750,8 @@ function renderContactFooter() {
                             </div>
                         </div>
 
+                        <a href="https://drive.google.com/file/d/1YNrk2CEBeDCe-GRXs-C_T1rvzxw6g_L2/view" target="_blank" class="course-link">รายละเอียดหลักสูตรฉบับปรับปรุง พ.ศ.2565</a>
+                        
                     <?php else: ?>
                         <div class="course-section">
                             <h3>Program Overview</h3>
