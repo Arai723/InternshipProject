@@ -590,7 +590,7 @@ function renderContactFooter() {
                             </div>
                             </div>
                         <div div class="is111img">
-                            <img src="" alt="">
+                            im
                         </div>
                         <div class="pr-post-body">
                             <div class="pr-tags">#IS111 #สารสนเทศศึกษา #SWU</div>
