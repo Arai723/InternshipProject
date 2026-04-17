@@ -10,7 +10,7 @@ error_reporting(E_ALL);
 $host   = "127.0.0.1";
 $user   = "root";
 $pass   = "";
-$dbname = "is_internships";
+$dbname = "is_internship";
 $port   = 3306;
 
 $conn = new mysqli($host, $user, $pass, $dbname, $port);
@@ -25,7 +25,7 @@ $conn->set_charset("utf8mb4");
 if (isset($_GET['lang'])) {
     $_SESSION['lang'] = $_GET['lang'];
     $page_param = isset($_GET['page']) ? "?page=" . $_GET['page'] : "";
-    header("Location: mitrhome.php" . $page_param);
+    header("Location: home.php" . $page_param);
     exit();
 }
 $lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'th';
@@ -78,7 +78,7 @@ $current_page = isset($_GET['page']) ? $_GET['page'] : 'internship';
 // ==========================================
 if (isset($_GET['logout'])) {
     session_destroy();
-    header("Location: mitrhome.php");
+    header("Location: home.php");
     exit();
 }
 
@@ -108,7 +108,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
             $_SESSION['user_id']   = $row['id'];
             $_SESSION['user_name'] = $row['name'];
             $_SESSION['role']      = $role;
-            header("Location: mitrhome.php");
+            header("Location: home.php");
             exit();
         } else {
             $error_msg = $lang == 'th' ? "ไอดีผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง" : "Invalid credentials";
@@ -157,7 +157,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
     $upd = $conn->prepare("UPDATE request SET status_now = ? WHERE req_id = ?");
     $upd->bind_param("ii", $new_status, $req_id);
     $upd->execute();
-    header("Location: mitrhome.php?page=internship&staff_updated=1");
+    header("Location: home.php?page=internship&staff_updated=1");
     exit();
 }
 
@@ -171,7 +171,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['teacher_action'])) {
     $upd = $conn->prepare("UPDATE request SET status_now = ? WHERE req_id = ?");
     $upd->bind_param("ii", $new_status, $req_id);
     $upd->execute();
-    header("Location: mitrhome.php?page=internship&teacher_updated=1");
+    header("Location: home.php?page=internship&teacher_updated=1");
     exit();
 }
 
@@ -215,7 +215,7 @@ function renderContactFooter() {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo t('system_title'); ?></title>
-    <link rel="stylesheet" href="./deco.css">
+    <link rel="stylesheet" href="deco.css">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         .alert-success { background:#d4edda; color:#155724; border:1px solid #c3e6cb; padding:10px 15px; border-radius:6px; margin-bottom:15px; }
@@ -267,7 +267,7 @@ function renderContactFooter() {
         <?php if ($error_msg): ?>
             <div class="alert-error"><?php echo htmlspecialchars($error_msg); ?></div>
         <?php endif; ?>
-        <form method="POST" action="mitrhome.php" class="login-form">
+        <form method="POST" action="home.php" class="login-form">
             <div class="role-selector">
                 <label><input type="radio" name="role" value="student" checked> <?php echo t('role_student'); ?></label>
                 <label><input type="radio" name="role" value="teacher"> <?php echo t('role_teacher'); ?></label>
@@ -300,7 +300,7 @@ function renderContactFooter() {
             <li><a href="?page=course"     class="<?php echo $current_page=='course'    ?'active':''; ?>"><?php echo t('menu_course'); ?></a></li>
             <li><a href="?page=teacher"    class="<?php echo $current_page=='teacher'   ?'active':''; ?>"><?php echo t('menu_teacher'); ?></a></li>
             <li><a href="?page=student"    class="<?php echo $current_page=='student'   ?'active':''; ?>"><?php echo t('menu_student'); ?></a></li>
-            <li class="logout-link"><a href="mitrhome.php?logout=true"><?php echo t('logout'); ?></a></li>
+            <li class="logout-link"><a href="home.php?logout=true"><?php echo t('logout'); ?></a></li>
         </ul>
     </aside>
 
@@ -420,7 +420,7 @@ function renderContactFooter() {
                                             </td>
                                             <td><?php echo getStatusBadge($cs, $lang); ?></td>
                                             <td>
-                                                <form method="POST" action="mitrhome.php?page=internship" class="inline-form">
+                                                <form method="POST" action="home.php?page=internship" class="inline-form">
                                                     <input type="hidden" name="req_id" value="<?php echo (int)$row['req_id']; ?>">
                                                     <select name="new_status" class="status-dropdown">
                                                         <option value="1" <?php if($cs==1) echo 'selected'; ?>>1: รับเรื่องเข้าระบบ</option>
@@ -478,11 +478,11 @@ function renderContactFooter() {
                                             <td><?php echo getStatusBadge($row['status_now'], $lang); ?></td>
                                             <td>
                                                 <?php if ((int)$row['status_now'] == 1): ?>
-                                                    <form method="POST" action="mitrhome.php?page=internship" class="inline-form">
+                                                    <form method="POST" action="home.php?page=internship" class="inline-form">
                                                         <input type="hidden" name="req_id" value="<?php echo (int)$row['req_id']; ?>">
                                                         <button type="submit" name="teacher_action" value="approve" class="btn-small success">✔ อนุมัติ</button>
                                                     </form>
-                                                    <form method="POST" action="mitrhome.php?page=internship" class="inline-form">
+                                                    <form method="POST" action="home.php?page=internship" class="inline-form">
                                                         <input type="hidden" name="req_id" value="<?php echo (int)$row['req_id']; ?>">
                                                         <button type="submit" name="teacher_action" value="reject" class="btn-small danger">✘ ไม่อนุมัติ</button>
                                                     </form>
@@ -522,7 +522,7 @@ function renderContactFooter() {
                         <div class="alert-<?php echo $form_msg['type']; ?>"><?php echo htmlspecialchars($form_msg['text']); ?></div>
                     <?php endif; ?>
 
-                    <form method="POST" action="mitrhome.php?page=request_form" class="submit-form">
+                    <form method="POST" action="home.php?page=request_form" class="submit-form">
                         <div class="form-row">
                             <div class="form-group-half">
                                 <label><?php echo $lang=='th' ? 'รหัสนิสิต' : 'Student ID'; ?></label>
