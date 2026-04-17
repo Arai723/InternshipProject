@@ -1,8 +1,8 @@
 -- MariaDB dump 10.19  Distrib 10.4.28-MariaDB, for osx10.10 (x86_64)
 --
--- Host: 127.0.0.1    Database: is_internships
+-- Host: localhost    Database: is_internship
 -- ------------------------------------------------------
--- Server version	8.4.7
+-- Server version	10.4.28-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -23,13 +23,13 @@ DROP TABLE IF EXISTS `request`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `request` (
-  `req_id` int NOT NULL AUTO_INCREMENT,
-  `stu_id` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `com_name` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `req_id` int(11) NOT NULL AUTO_INCREMENT,
+  `stu_id` varchar(20) DEFAULT NULL,
+  `com_name` varchar(200) DEFAULT NULL,
   `req_date` date DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
-  `status_now` int DEFAULT '1',
+  `status_now` int(11) DEFAULT 1,
   PRIMARY KEY (`req_id`),
   KEY `request_student_FK` (`stu_id`),
   CONSTRAINT `request_student_FK` FOREIGN KEY (`stu_id`) REFERENCES `student` (`stu_id`) ON DELETE SET NULL ON UPDATE CASCADE
@@ -54,9 +54,9 @@ DROP TABLE IF EXISTS `staff`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `staff` (
-  `sff_id` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
-  `sff_pass` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `sff_name` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `sff_id` varchar(20) NOT NULL,
+  `sff_pass` varchar(100) DEFAULT NULL,
+  `sff_name` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`sff_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -67,7 +67,7 @@ CREATE TABLE `staff` (
 
 LOCK TABLES `staff` WRITE;
 /*!40000 ALTER TABLE `staff` DISABLE KEYS */;
-INSERT INTO `staff` VALUES ('SFF001','1234','มานะ ขยันยิ่ง');
+INSERT INTO `staff` VALUES ('SFF001','1234','มานะ ขยันยิ่ง'),('SFF002','1234','เวลโดร่า เทมเพส');
 /*!40000 ALTER TABLE `staff` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -79,9 +79,9 @@ DROP TABLE IF EXISTS `status`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `status` (
-  `status_code` int NOT NULL,
-  `status_name` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `changed_by` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `status_code` int(11) NOT NULL,
+  `status_name` varchar(100) DEFAULT NULL,
+  `changed_by` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`status_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -104,12 +104,12 @@ DROP TABLE IF EXISTS `student`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `student` (
-  `stu_id` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
-  `stu_pass` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `stu_name` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `stu_year` varchar(10) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `stu_email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `stu_tel` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `stu_id` varchar(20) NOT NULL,
+  `stu_pass` varchar(100) DEFAULT NULL,
+  `stu_name` varchar(100) DEFAULT NULL,
+  `stu_year` varchar(10) DEFAULT NULL,
+  `stu_email` varchar(100) DEFAULT NULL,
+  `stu_tel` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`stu_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -120,7 +120,7 @@ CREATE TABLE `student` (
 
 LOCK TABLES `student` WRITE;
 /*!40000 ALTER TABLE `student` DISABLE KEYS */;
-INSERT INTO `student` VALUES ('67101010677','1234','พรธนศักดิ์ คำฟัก','2','phontanasak.ohm@gmail.com','0631797973'),('67101010687','1234','รพีภัทร เรืองทอง','2','raphiphat.mit@g.swu.ac.th','0988509224');
+INSERT INTO `student` VALUES ('67101010660','1234','ช่อผกา มาลัยจรูญ','2','chorpaka.malaicharoon@g.swu.ac.th','0646606540'),('67101010662','1234','ณฤเมธ นฤพัคโภคิน','2','Nalumate.nine@g.swu.ac.th','0946754803'),('67101010677','1234','พรธนาศักดิ์ คำฟัก','2','phontanasak.ohm@gmail.com','0631797973'),('67101010687','1234','รพีภัทร เรืองทอง','2','raphiphat.mit@g.swu.ac.th','0988509224'),('67101010692','1234','อนุสรณ์ เชียงหนุ้น','2','anuson.chaengnoon@g.swu.ac.th','0996165899'),('67101010695','1234','อิสรีย์ วัฒนเกษมวงศ์','2','itsaree.watta@g.swu.ac.th','0933929145');
 /*!40000 ALTER TABLE `student` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -132,9 +132,9 @@ DROP TABLE IF EXISTS `teacher`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `teacher` (
-  `tea_id` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
-  `tea_pass` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `tea_name` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `tea_id` varchar(20) NOT NULL,
+  `tea_pass` varchar(100) DEFAULT NULL,
+  `tea_name` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`tea_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -145,21 +145,10 @@ CREATE TABLE `teacher` (
 
 LOCK TABLES `teacher` WRITE;
 /*!40000 ALTER TABLE `teacher` DISABLE KEYS */;
-INSERT INTO `teacher` VALUES ('TEA001','1234','ผศ.ดร.วิภา ใจดี');
+INSERT INTO `teacher` VALUES ('TEA001','1234','ผศ.ดร.วิภา ใจดี'),('TEA002','1234','ริมุรุ เทมเพส');
 /*!40000 ALTER TABLE `teacher` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Dumping routines for database 'is_internships'
+-- Dumping routines for database 'is_internship'
 --
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2026-04-09 20:13:10
