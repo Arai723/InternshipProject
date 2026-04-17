@@ -9,8 +9,8 @@ error_reporting(E_ALL);
 // ==========================================
 $host   = "127.0.0.1";
 $user   = "root";
-$pass   = "";
-$dbname = "is_internship";
+$pass   = "root1234";
+$dbname = "is_internships";
 $port   = 3306;
 
 $conn = new mysqli($host, $user, $pass, $dbname, $port);
@@ -588,9 +588,9 @@ function renderContactFooter() {
                                 <div class="pr-post-account">is.hmswu</div>
                                 <div class="pr-post-date">6 กุมภาพันธ์ 2569</div>
                             </div>
-                        </div>
-                        <div class="pr-post-img-placeholder">
-                            📸 IS111 — กิจกรรมโต้วาที
+                            </div>
+                        <div div class="is111img">
+                            <img src="" alt="">
                         </div>
                         <div class="pr-post-body">
                             <div class="pr-tags">#IS111 #สารสนเทศศึกษา #SWU</div>
@@ -612,8 +612,10 @@ function renderContactFooter() {
                                 <div class="pr-post-date">21 กุมภาพันธ์ 2568</div>
                             </div>
                         </div>
+                        <div class="img2">
                         <img src="https://is.hu.swu.ac.th/wp-content/uploads/2025/02/GDCatalog2-1140x458.jpg"
                              alt="Government Data Catalog Day 2024" class="pr-post-img">
+                        </div>
                         <div class="pr-post-body">
                             <div class="pr-tags">#GDCatalog #OpenData #SWU #สารสนเทศศึกษา</div>
                             <div class="pr-text">🏆 <strong>Government Data Catalog Day 2024: Insights and Impact</strong>
@@ -636,9 +638,9 @@ function renderContactFooter() {
                             <div class="pr-post-date">วันจันทร์ที่ 16 มีนาคม 2569</div>
                         </div>
                     </div>
-                    <div class="pr-post-img-placeholder">
-                        📸 โครงการพัฒนาระบบสารสนเทศเพื่อการบริหารจัดการองค์กร
-                    </div>
+                <div class="Img111">
+                    <img src="https://hu.swu.ac.th/Portals/5/EasyDNNNews/12571/600600p2228EDNmainimg-1611.jpg" alt="img111">
+                </div>
                     <div class="pr-post-body">
                         <div class="pr-tags">#HumanitiesSWU #DigitalTransformation #Automation #CyberSecurity</div>
                         <div class="pr-text">🖥️ <strong>โครงการ "พัฒนาระบบสารสนเทศเพื่อการบริหารจัดการองค์กร"</strong>
@@ -664,18 +666,95 @@ function renderContactFooter() {
                 break;
 
             // ==========================================
-            // 4. หลักสูตร
+            // 4. หลักสูตร (แบบไม่มีจุด Bullet Points)
             // ==========================================
             case 'course': ?>
+                <style>
+                    /* CSS เฉพาะส่วนเนื้อหาหลักสูตร */
+                    .course-section { margin-bottom: 25px; }
+                    .course-section h3 { 
+                        color: #003366; 
+                        font-size: 1.25rem; 
+                        margin-bottom: 12px; 
+                        border-bottom: 1px solid #eee; 
+                        padding-bottom: 5px;
+                    }
+                    .course-item { 
+                        margin-bottom: 10px; 
+                        padding-left: 5px;
+                        line-height: 1.6;
+                    }
+                    .course-item strong { color: #333; }
+                    .text-indent { padding-left: 20px; }
+                    .course-quote { 
+                        font-style: italic; 
+                        color: #555; 
+                        background: #fcfcfc; 
+                        padding: 15px; 
+                        border-left: 4px solid #003366;
+                        margin-bottom: 25px;
+                    }
+                </style>
+
                 <div class="card">
                     <h4><?php echo $lang=='th' ? 'หลักสูตรศิลปศาสตรบัณฑิต สาขาวิชาสารสนเทศศึกษา' : 'B.A. Program in Information Studies'; ?></h4>
-                    <p class="text-quote">
-                        <?php echo $lang=='th' ? 'ปรัชญา: สารสนเทศสร้างปัญญา ปัญญาสร้างคุณค่าให้สังคม' : 'Philosophy: Information creates wisdom, wisdom creates value for society'; ?>
-                    </p>
-                    <hr class="divider">
-                    <p><?php echo $lang=='th'
-                        ? 'มุ่งผลิตบัณฑิตที่มีความรู้ ความสามารถในการจัดการสารสนเทศและข้อมูล ประยุกต์ใช้เทคโนโลยีดิจิทัล และมีทักษะในการสื่อสารเพื่อตอบสนองความต้องการของสังคมในยุคดิจิทัล'
-                        : 'Aims to produce graduates with knowledge and skills in information and data management, digital technology application, and communication skills to meet the needs of the digital society.'; ?></p>
+                    
+                    <div class="course-quote">
+                        <?php echo $lang=='th' ? 'ปรัชญา: "สารสนเทศสร้างปัญญา ปัญญาสร้างคุณค่าให้สังคม"' : 'Philosophy: "Information creates wisdom, wisdom creates value for society"'; ?>
+                    </div>
+
+                    <?php if ($lang == 'th'): ?>
+                        <div class="course-section">
+                            <div class="course-item"><strong>รหัสหลักสูตร:</strong> 25520091104002</div>
+                        </div>
+
+                        <div class="course-section">
+                            <h3>1. ชื่อหลักสูตรและวุฒิการศึกษา</h3>
+                            <div class="course-item"><strong>ชื่อภาษาไทย:</strong> ศิลปศาสตรบัณฑิต (ศศ.บ.) สาขาวิชาสารสนเทศศึกษา</div>
+                            <div class="course-item"><strong>ชื่อภาษาอังกฤษ:</strong> Bachelor of Arts (Information Studies)</div>
+                            <div class="course-item"><strong>อักษรย่อ:</strong> B.A. (Information Studies)</div>
+                        </div>
+
+                        <div class="course-section">
+                            <h3>2. เจาะลึกวิชาเรียน (กลุ่มวิชาเอก)</h3>
+                            <p class="course-item">หลักสูตรแบ่งกลุ่มวิชาเพื่อให้ครอบคลุมการทำงานทั้งรูปแบบดั้งเดิมและเทคโนโลยีสมัยใหม่:</p>
+                            <div class="course-item text-indent"><strong>การจัดการสารสนเทศ:</strong> เรียนรู้การวิเคราะห์ จัดหมวดหมู่ และจัดเก็บข้อมูลอย่างเป็นระบบ</div>
+                            <div class="course-item text-indent"><strong>เทคโนโลยีสารสนเทศ:</strong> การเขียนโปรแกรมเบื้องต้น การจัดการฐานข้อมูล และการพัฒนาเว็บไซต์</div>
+                            <div class="course-item text-indent"><strong>การจัดการนวัตกรรมและคอนเทนต์:</strong> การสร้างสรรค์เนื้อหาดิจิทัล การตลาดสารสนเทศ และการใช้ AI</div>
+                            <div class="course-item text-indent"><strong>การบริการสารสนเทศ:</strong> จิตวิทยาการบริการ และการถ่ายทอดความรู้</div>
+                        </div>
+
+                        <div class="course-section">
+                            <h3>3. จุดเด่นของสาขา</h3>
+                            <div class="course-item"><strong>ความร่วมมือกับภาคเอกชน:</strong> มีวิทยากรจากวงการ Digital Agency และ Data Analyst</div>
+                            <div class="course-item"><strong>ทักษะที่หลากหลาย:</strong> ผสมผสานศาสตร์มนุษย์และศาสตร์ข้อมูลเข้าด้วยกัน</div>
+                            <div class="course-item"><strong>ห้องปฏิบัติการ:</strong> มีเครื่องมือและซอฟต์แวร์ที่ทันสมัยสำหรับการฝึกปฏิบัติจริง</div>
+                        </div>
+
+                        <div class="course-section">
+                            <h3>4. แนวทางการประกอบอาชีพ</h3>
+                            <div class="course-item">นักจัดการสารสนเทศและข้อมูล (Information Manager)</div>
+                            <div class="course-item">นักจดหมายเหตุ หรือ บรรณารักษ์ยุคใหม่ (Modern Librarian)</div>
+                            <div class="course-item">Content Creator และ Digital Content Manager</div>
+                            <div class="course-item">Data Curator และ Knowledge Manager ในองค์กรชั้นนำ</div>
+                        </div>
+
+                        <div class="course-section">
+                            <h3>5. เกณฑ์การคัดเลือก ปี 2569 (TCAS)</h3>
+                            <div class="course-item"><strong>ภาคปกติ:</strong> รอบที่ 1 (Portfolio) 10 คน | รอบที่ 3 (Admission) 40 คน</div>
+                            <div class="course-item"><strong>ภาคพิเศษ:</strong> รอบที่ 3 (Admission) 40 คน</div>
+                            <div class="course-item" style="font-size: 0.9rem; color: #777; margin-top: 10px;">
+                                *พิจารณาจาก GPAX และคะแนน TGAT / A-Level ตามเกณฑ์ของมหาวิทยาลัย
+                            </div>
+                        </div>
+
+                    <?php else: ?>
+                        <div class="course-section">
+                            <h3>Program Overview</h3>
+                            <div class="course-item">Focused on producing graduates skilled in information management and digital transformation.</div>
+                            <div class="course-item"><strong>Core Areas:</strong> IT, Data Analytics, and Content Creation.</div>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 <?php renderContactFooter();
                 break;

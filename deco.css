@@ -188,3 +188,10 @@ body { font-family: 'Prompt', sans-serif; background: #f4f6f9; color: #333; line
     .faculty-info { grid-template-columns: 1fr; }
     .faculty-item { grid-template-columns: 56px 1fr; }
 }
+/* จัดรูปภาพในโพสต์ที่ 3 ให้อยู่ตรงกลาง */
+.Img111 {
+    display: flex;
+    justify-content: center; /* จัดแนวนอน */
+    align-items: center;     /* จัดแนวตั้ง (ถ้าจำเป็น) */
+    width: 100%;
+}
