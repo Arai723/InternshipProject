@@ -20,15 +20,9 @@ if ($conn->connect_error) {
 $conn->set_charset("utf8mb4");
 
 // ==========================================
-// ระบบเปลี่ยนภาษา
+// ภาษาไทยเท่านั้น (ปิดระบบเปลี่ยนภาษา)
 // ==========================================
-if (isset($_GET['lang'])) {
-    $_SESSION['lang'] = $_GET['lang'];
-    $page_param = isset($_GET['page']) ? "?page=" . $_GET['page'] : "";
-    header("Location: home.php" . $page_param);
-    exit();
-}
-$lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'th';
+$lang = 'th';
 
 $texts = [
     'th' => [
@@ -46,21 +40,6 @@ $texts = [
         'role_teacher' => 'อาจารย์',
         'role_staff'   => 'เจ้าหน้าที่',
     ],
-    'en' => [
-        'system_title' => 'IS Internship',
-        'system_desc'  => 'Information Studies Internship System (SWU)',
-        'menu_intern'  => 'Internship Info',
-        'menu_pr'      => 'News & PR',
-        'menu_course'  => 'Curriculum',
-        'menu_teacher' => 'Faculty',
-        'menu_student' => 'Students',
-        'logout'       => 'Logout',
-        'welcome'      => 'Welcome',
-        'btn_submit'   => '+ Submit Request',
-        'role_student' => 'Student',
-        'role_teacher' => 'Teacher',
-        'role_staff'   => 'Staff',
-    ]
 ];
 
 function t($key) {
@@ -272,10 +251,7 @@ function renderContactFooter() {
 </head>
 <body>
 
-<div class="lang-bar">
-    <a href="?<?php echo isset($_GET['page']) ? 'page='.$_GET['page'].'&' : ''; ?>lang=th" class="<?php echo $lang=='th'?'active':''; ?>">TH</a> |
-    <a href="?<?php echo isset($_GET['page']) ? 'page='.$_GET['page'].'&' : ''; ?>lang=en" class="<?php echo $lang=='en'?'active':''; ?>">EN</a>
-</div>
+
 
 <?php if (!isset($_SESSION['user_id'])): ?>
 <!-- ===== หน้า Login ===== -->
