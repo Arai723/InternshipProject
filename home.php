@@ -976,4 +976,4 @@ function renderContactFooter() {
 <?php endif; ?>
 
 </body>
-</html>
+</html
