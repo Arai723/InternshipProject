@@ -1,19 +1,15 @@
-/* การตั้งค่าพื้นฐาน */
+/* ==========================================
+   Base
+   ========================================== */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Prompt', sans-serif; background: #f4f6f9; color: #333; line-height: 1.6; }
 
-/* Language Toggle Bar */
-.lang-bar {
-    position: fixed; top: 15px; right: 25px; font-size: 14px;
-    background: #fff; padding: 5px 15px; border-radius: 20px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.05); z-index: 1000;
-}
-.lang-bar a { text-decoration: none; color: #94a3b8; font-weight: 500; }
-.lang-bar a.active { color: #dc2626; font-weight: 600; }
-
-/* หน้า Login */
+/* ==========================================
+   Login Page
+   ========================================== */
 .login-page { display: flex; height: 100vh; align-items: center; justify-content: center; }
 .login-container { width: 400px; background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+
 .login-header { text-align: center; margin-bottom: 30px; }
 .logo-text { font-size: 40px; font-weight: 700; color: #dc2626; line-height: 1; margin-bottom: 10px; }
 .login-header h1 { font-size: 22px; color: #1e293b; }
@@ -21,16 +17,22 @@ body { font-family: 'Prompt', sans-serif; background: #f4f6f9; color: #333; line
 .login-header p { font-size: 13px; color: #64748b; margin-top: 5px; }
 
 .role-selector { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; color: #475569; }
+
 .form-group { margin-bottom: 15px; }
 .form-group label { display: block; font-size: 13px; color: #475569; margin-bottom: 5px; }
 .form-group input { width: 100%; padding: 10px 15px; border: 1px solid #cbd5e1; border-radius: 4px; font-family: 'Prompt'; }
+
 .btn-login { width: 100%; padding: 12px; background: #1e293b; color: #fff; border: none; border-radius: 4px; font-size: 15px; cursor: pointer; font-family: 'Prompt'; transition: background 0.2s; }
 .btn-login:hover { background: #0f172a; }
 
 .alert-error { padding: 10px; background: #fef2f2; border-left: 3px solid #ef4444; color: #b91c1c; font-size: 13px; margin-bottom: 20px; }
 
-/* หน้า Dashboard: Sidebar */
+/* ==========================================
+   Dashboard Layout
+   ========================================== */
 .dashboard-page { display: flex; height: 100vh; }
+
+/* Sidebar */
 .sidebar { width: 260px; background: #1e293b; color: #fff; padding: 30px 0; display: flex; flex-direction: column; }
 .sidebar-header { padding: 0 25px; margin-bottom: 30px; }
 .sidebar-header h2 { font-size: 22px; margin-bottom: 2px; }
@@ -44,20 +46,21 @@ body { font-family: 'Prompt', sans-serif; background: #f4f6f9; color: #333; line
 .logout-link { margin-top: auto; border-top: 1px solid #334155; }
 .logout-link a { color: #f87171 !important; }
 
-/* หน้า Dashboard: Content */
+/* Main content */
 .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 .topbar { background: #fff; padding: 20px 30px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
 .topbar h3 { font-size: 16px; color: #334155; font-weight: 500; }
 .badge { font-size: 12px; padding: 3px 8px; border-radius: 12px; margin-left: 5px; background: #f1f5f9; color: #64748b; }
-
 .content-wrapper { padding: 30px; overflow-y: auto; flex: 1; }
 
-/* Cards & Tables */
+/* ==========================================
+   Cards & Tables
+   ========================================== */
 .card { background: #fff; border-radius: 8px; padding: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid #e2e8f0; }
 .card-header-flex { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
 .card h4 { font-size: 18px; color: #1e293b; margin-bottom: 5px; font-weight: 600; }
+
 .text-muted { color: #64748b; font-size: 13px; }
-.text-quote { font-style: italic; color: #64748b; margin-top: 10px; padding-left: 10px; border-left: 3px solid #cbd5e1; }
 .divider { border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0; }
 
 .data-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
@@ -65,7 +68,9 @@ body { font-family: 'Prompt', sans-serif; background: #f4f6f9; color: #333; line
 .data-table th { background: #f8fafc; color: #475569; font-weight: 500; }
 .empty-state { color: #94a3b8; font-style: italic; }
 
-/* Badges สำหรับสถานะ (สีสบายตา) */
+/* ==========================================
+   Status Badges
+   ========================================== */
 .badge-status { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; display: inline-block; }
 .status-0 { background-color: #f1f5f9; color: #475569; }
 .status-1 { background-color: #e0f2fe; color: #0284c7; }
@@ -74,19 +79,20 @@ body { font-family: 'Prompt', sans-serif; background: #f4f6f9; color: #333; line
 .status-4 { background-color: #dcfce7; color: #15803d; }
 .status-9 { background-color: #fee2e2; color: #b91c1c; }
 
-/* Buttons & Forms */
+/* ==========================================
+   Buttons & Forms
+   ========================================== */
 .btn-action { padding: 8px 18px; border: none; border-radius: 4px; font-family: 'Prompt'; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
 .btn-action.primary { background: #1e293b; color: #fff; }
 .btn-action.primary:hover { background: #0f172a; }
 
 .btn-small { padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 4px; background: #fff; cursor: pointer; font-family: 'Prompt'; font-size: 12px; text-decoration: none; color: #333; }
 .btn-small.success { background: #10b981; color: #fff; border: none; }
-.btn-small.danger { background: #ef4444; color: #fff; border: none; }
+.btn-small.danger  { background: #ef4444; color: #fff; border: none; }
 .btn-small.text-only { background: transparent; border: none; text-decoration: underline; color: #64748b; }
 
 .status-dropdown { padding: 6px; border-radius: 4px; border: 1px solid #cbd5e1; font-family: 'Prompt'; font-size: 12px; }
 
-/* CSS สำหรับฟอร์มกรอกข้อมูล */
 .submit-form { margin-top: 20px; }
 .form-row { display: flex; gap: 20px; margin-bottom: 15px; }
 .form-group-half { flex: 1; }
@@ -95,17 +101,20 @@ body { font-family: 'Prompt', sans-serif; background: #f4f6f9; color: #333; line
 .readonly-input { background-color: #f1f5f9; color: #64748b; cursor: not-allowed; }
 .form-actions { margin-top: 30px; text-align: right; }
 
-/* Other */
+/* ==========================================
+   Misc UI
+   ========================================== */
 .clean-list { list-style: none; margin-top: 15px; font-size: 14px; }
 .clean-list li { margin-bottom: 8px; }
 .clean-list a { color: #dc2626; text-decoration: none; }
 .clean-list a:hover { text-decoration: underline; }
+
 .placeholder-box { padding: 40px; background: #f8fafc; border: 1px dashed #cbd5e1; text-align: center; color: #94a3b8; border-radius: 4px; font-size: 14px; margin-top: 15px; }
 
 /* ==========================================
-   Faculty / Contact Footer styles
+   Faculty & Contact Footer
    ========================================== */
-.faculty-section-title { color:#003366; border-bottom:2px solid #ccc; padding-bottom:5px; margin-top:20px; margin-bottom:10px; }
+.faculty-section-title { color: #003366; border-bottom: 2px solid #ccc; padding-bottom: 5px; margin-top: 20px; margin-bottom: 10px; }
 
 .faculty-item {
     background: #f9f9f9;
@@ -118,18 +127,17 @@ body { font-family: 'Prompt', sans-serif; background: #f4f6f9; color: #333; line
     gap: 15px;
     align-items: start;
 }
-.faculty-item img { width:56px; height:56px; border-radius:50%; object-fit:cover; }
+.faculty-item img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; }
 
-/* ข้อมูลอาจารย์จัดเรียงเป็นระเบียบแบบ grid */
 .faculty-info {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 4px 15px;
     align-items: center;
 }
-.faculty-info .fname  { font-weight:bold; font-size:15px; color:#222; grid-column: 1 / -1; }
-.faculty-info .feng   { color:#555; font-size:13px; }
-.faculty-info .femail { color:#0066cc; font-size:13px; }
+.faculty-info .fname  { font-weight: bold; font-size: 15px; color: #222; grid-column: 1 / -1; }
+.faculty-info .feng   { color: #555; font-size: 13px; }
+.faculty-info .femail { color: #0066cc; font-size: 13px; }
 
 .faculty-footer {
     background: #003366;
@@ -143,48 +151,47 @@ body { font-family: 'Prompt', sans-serif; background: #f4f6f9; color: #333; line
 .faculty-footer h3 { margin-top: 0; }
 
 /* ==========================================
-   PR Post styles (คล้าย IG)
+   PR Feed
    ========================================== */
+.pr-feed { display: flex; flex-direction: column; gap: 0; }
+
 .pr-post {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    border-bottom: 1px solid #f1f5f9;
     background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    overflow: hidden;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    transition: background 0.15s;
 }
-.pr-post-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px 10px 16px;
-}
-.pr-post-avatar {
-    width: 40px; height: 40px; border-radius: 50%;
-    background: #003366;
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; font-weight: 700; font-size: 14px; flex-shrink: 0;
-}
-.pr-post-account { font-weight: 600; font-size: 14px; color: #1e293b; }
-.pr-post-date    { font-size: 12px; color: #94a3b8; }
-.pr-post-img     { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
-.pr-post-img-placeholder {
-    width: 100%; aspect-ratio: 1/1;
+.pr-post:last-child { border-bottom: none; }
+.pr-post:hover { background: #fafbfc; }
+
+.pr-post-thumb {
+    width: 140px; height: 140px;
+    flex-shrink: 0; overflow: hidden;
     background: #f1f5f9;
     display: flex; align-items: center; justify-content: center;
-    color: #94a3b8; font-size: 14px;
 }
-.pr-post-body  { padding: 14px 16px 16px 16px; }
-.pr-post-body .pr-tags  { color: #003366; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
-.pr-post-body .pr-text  { font-size: 14px; color: #334155; line-height: 1.7; white-space: pre-line; }
-.pr-post-body .pr-link  { display: inline-block; margin-top: 10px; color: #dc2626; font-size: 13px; text-decoration: none; }
+.pr-post-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pr-post-thumb-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #cbd5e1; font-size: 13px; }
+
+.pr-post-body { padding: 18px 22px; display: flex; flex-direction: column; justify-content: center; gap: 6px; }
+.pr-post-meta { display: flex; align-items: center; gap: 10px; }
+.pr-post-avatar { width: 24px; height: 24px; border-radius: 50%; background: #1e293b; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 9px; flex-shrink: 0; }
+.pr-post-account { font-size: 12px; font-weight: 600; color: #64748b; }
+.pr-post-date    { font-size: 11px; color: #cbd5e1; }
+
+.pr-post-body .pr-tags  { color: #003366; font-size: 11px; font-weight: 500; letter-spacing: 0.01em; }
+.pr-post-title          { font-size: 14px; font-weight: 600; color: #1e293b; line-height: 1.4; }
+.pr-post-body .pr-text  { font-size: 13px; color: #64748b; line-height: 1.6; white-space: pre-line; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pr-post-body .pr-link  { font-size: 12px; color: #dc2626; text-decoration: none; font-weight: 500; }
 .pr-post-body .pr-link:hover { text-decoration: underline; }
 
-/* 2-column grid สำหรับโพสต์ PR คู่ */
-.pr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
+/* ==========================================
+   Responsive
+   ========================================== */
 @media (max-width: 700px) {
-    .pr-grid { grid-template-columns: 1fr; }
+    .pr-post { grid-template-columns: 100px 1fr; }
+    .pr-post-thumb { width: 100px; height: 100px; }
     .faculty-info { grid-template-columns: 1fr; }
     .faculty-item { grid-template-columns: 56px 1fr; }
 }

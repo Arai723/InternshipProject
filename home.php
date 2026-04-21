@@ -1,12 +1,9 @@
 <?php
 session_start();
-
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// ==========================================
-// เชื่อมต่อ Database
-// ==========================================
+// --- Database ---
 $host   = "127.0.0.1";
 $user   = "root";
 $pass   = "";
@@ -14,14 +11,10 @@ $dbname = "is_internship";
 $port   = 3306;
 
 $conn = new mysqli($host, $user, $pass, $dbname, $port);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
 $conn->set_charset("utf8mb4");
 
-// ==========================================
-// ภาษาไทยเท่านั้น (ปิดระบบเปลี่ยนภาษา)
-// ==========================================
+// --- Language (Thai only) ---
 $lang = 'th';
 
 $texts = [
@@ -30,6 +23,7 @@ $texts = [
         'system_desc'  => 'ระบบจัดการข้อมูลการฝึกงาน สาขาสารสนเทศศึกษา (SWU)',
         'menu_intern'  => 'ข้อมูลการฝึกงาน',
         'menu_pr'      => 'ประชาสัมพันธ์สาขา',
+        'menu_about'   => 'เกี่ยวกับเรา',
         'menu_course'  => 'หลักสูตร',
         'menu_teacher' => 'คณาจารย์',
         'menu_student' => 'นิสิตชั้นปีที่ 1-4',
@@ -47,23 +41,17 @@ function t($key) {
     return $texts[$lang][$key] ?? $key;
 }
 
-// ==========================================
-// Routing
-// ==========================================
-$current_page = isset($_GET['page']) ? $_GET['page'] : 'internship';
+// --- Routing ---
+$current_page = $_GET['page'] ?? 'internship';
 
-// ==========================================
-// Logout
-// ==========================================
+// --- Logout ---
 if (isset($_GET['logout'])) {
     session_destroy();
     header("Location: home.php");
     exit();
 }
 
-// ==========================================
-// Login
-// ==========================================
+// --- Login ---
 $error_msg = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
     $role     = $_POST['role'];
@@ -90,14 +78,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
             header("Location: home.php");
             exit();
         } else {
-            $error_msg = $lang == 'th' ? "ไอดีผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง" : "Invalid credentials";
+            $error_msg = "ไอดีผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง";
         }
     }
 }
 
-// ==========================================
-// [นิสิต] บันทึกคำร้องลง Database
-// ==========================================
+// --- [นิสิต] บันทึกคำร้อง ---
 $form_msg = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_request'])) {
     $stu_id     = $_SESSION['user_id'];
@@ -108,28 +94,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit_request'])) {
     $status_now = 1;
 
     if (empty($com_name) || empty($start_date) || empty($end_date)) {
-        $form_msg = ['type' => 'error', 'text' => $lang == 'th' ? 'กรุณากรอกข้อมูลให้ครบถ้วน' : 'Please fill in all fields'];
+        $form_msg = ['type' => 'error', 'text' => 'กรุณากรอกข้อมูลให้ครบถ้วน'];
     } elseif ($end_date < $start_date) {
-        $form_msg = ['type' => 'error', 'text' => $lang == 'th' ? 'วันสิ้นสุดต้องไม่น้อยกว่าวันเริ่มต้น' : 'End date must be after start date'];
+        $form_msg = ['type' => 'error', 'text' => 'วันสิ้นสุดต้องไม่น้อยกว่าวันเริ่มต้น'];
     } else {
-        $ins = $conn->prepare(
-            "INSERT INTO request (stu_id, com_name, req_date, start_date, end_date, status_now)
-             VALUES (?, ?, ?, ?, ?, ?)"
-        );
+        $ins = $conn->prepare("INSERT INTO request (stu_id, com_name, req_date, start_date, end_date, status_now) VALUES (?, ?, ?, ?, ?, ?)");
         $ins->bind_param("sssssi", $stu_id, $com_name, $req_date, $start_date, $end_date, $status_now);
         if ($ins->execute()) {
-            $form_msg = ['type' => 'success', 'text' => $lang == 'th'
-                ? 'ยื่นคำร้องสำเร็จ! สถานะ: รับเรื่องเข้าระบบแล้ว'
-                : 'Request submitted successfully!'];
+            $form_msg = ['type' => 'success', 'text' => 'ยื่นคำร้องสำเร็จ! สถานะ: รับเรื่องเข้าระบบแล้ว'];
         } else {
             $form_msg = ['type' => 'error', 'text' => 'Database error: ' . $conn->error];
         }
     }
 }
 
-// ==========================================
-// [Staff] อัปเดตสถานะคำร้อง
-// ==========================================
+// --- [Staff] อัปเดตสถานะ ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
     $req_id     = (int)$_POST['req_id'];
     $new_status = (int)$_POST['new_status'];
@@ -140,13 +119,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
     exit();
 }
 
-// ==========================================
-// [Teacher] อนุมัติ / ไม่อนุมัติ
-// ==========================================
+// --- [Teacher] อนุมัติ / ไม่อนุมัติ ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['teacher_action'])) {
     $req_id     = (int)$_POST['req_id'];
-    $action     = $_POST['teacher_action'];
-    $new_status = ($action == 'approve') ? 2 : 9;
+    $new_status = ($_POST['teacher_action'] == 'approve') ? 2 : 9;
     $upd = $conn->prepare("UPDATE request SET status_now = ? WHERE req_id = ?");
     $upd->bind_param("ii", $new_status, $req_id);
     $upd->execute();
@@ -154,27 +130,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['teacher_action'])) {
     exit();
 }
 
-// ==========================================
-// ฟังก์ชันแปลงสถานะเป็น Badge HTML
-// ==========================================
+// --- ฟังก์ชัน Badge สถานะ ---
 function getStatusBadge($status_code, $lang) {
     $status_map = [
-        1 => ['th' => '1: รับเรื่องเข้าระบบ', 'en' => '1: Received',  'class' => 'status-1'],
-        2 => ['th' => '2: อาจารย์อนุมัติ',    'en' => '2: Approved',  'class' => 'status-2'],
-        3 => ['th' => '3: ออกใบส่งตัวแล้ว',   'en' => '3: Issued',    'class' => 'status-3'],
-        4 => ['th' => '4: ฝึกงานเสร็จสิ้น',   'en' => '4: Completed', 'class' => 'status-4'],
-        9 => ['th' => '9: ยกเลิกเอกสาร',      'en' => '9: Cancelled', 'class' => 'status-9'],
+        1 => ['th' => '1: รับเรื่องเข้าระบบ', 'class' => 'status-1'],
+        2 => ['th' => '2: อาจารย์อนุมัติ',    'class' => 'status-2'],
+        3 => ['th' => '3: ออกใบส่งตัวแล้ว',   'class' => 'status-3'],
+        4 => ['th' => '4: ฝึกงานเสร็จสิ้น',   'class' => 'status-4'],
+        9 => ['th' => '9: ยกเลิกเอกสาร',      'class' => 'status-9'],
     ];
     $sc = (int)$status_code;
     if (!array_key_exists($sc, $status_map)) {
-        return "<span class='badge-status status-0'>" . ($lang == 'th' ? 'รอตรวจสอบ' : 'Pending') . "</span>";
+        return "<span class='badge-status status-0'>รอตรวจสอบ</span>";
     }
     return "<span class='badge-status " . $status_map[$sc]['class'] . "'>" . $status_map[$sc][$lang] . "</span>";
 }
 
-// ==========================================
-// ฟังก์ชัน Render ส่วน "ติดต่อเรา" (เหมือนในหน้าคณาจารย์)
-// ==========================================
+// --- ฟังก์ชัน Footer ติดต่อเรา ---
 function renderContactFooter() {
     echo '
     <div class="faculty-footer">
@@ -189,7 +161,7 @@ function renderContactFooter() {
 }
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $lang; ?>">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -199,6 +171,8 @@ function renderContactFooter() {
     <style>
         .alert-success { background:#d4edda; color:#155724; border:1px solid #c3e6cb; padding:10px 15px; border-radius:6px; margin-bottom:15px; }
         .alert-error   { background:#f8d7da; color:#721c24; border:1px solid #f5c6cb; padding:10px 15px; border-radius:6px; margin-bottom:15px; }
+
+        /* Faculty & Contact */
         .faculty-section-title { color:#003366; border-bottom:2px solid #ccc; padding-bottom:5px; margin-top:20px; margin-bottom:10px; }
         .faculty-item { background:#f9f9f9; padding:12px 15px; margin:10px 0; border-radius:8px; border-left:4px solid #003366; display:grid; grid-template-columns:56px 1fr; gap:15px; align-items:start; }
         .faculty-item img { width:56px; height:56px; border-radius:50%; object-fit:cover; }
@@ -208,28 +182,23 @@ function renderContactFooter() {
         .faculty-info .femail { color:#0066cc; font-size:13px; }
         .faculty-footer { background:#003366; color:white; padding:15px 20px; border-radius:8px; margin-top:20px; font-size:14px; line-height:1.8; }
         .faculty-footer h3 { margin-top:0; }
-        .inline-form { display:inline; }
 
-        /* PR Post styles — minimal horizontal feed */
+        /* Course page */
+        .course-section { margin-bottom:25px; }
+        .course-section h3 { color:#003366; font-size:1.25rem; margin-bottom:12px; border-bottom:1px solid #eee; padding-bottom:5px; }
+        .course-item { margin-bottom:10px; padding-left:5px; line-height:1.6; }
+        .course-item strong { color:#333; }
+        .text-indent { padding-left:20px; }
+        .course-quote { font-style:italic; color:#555; background:#fcfcfc; padding:15px; border-left:4px solid #003366; margin-bottom:25px; }
+
+        /* PR Feed */
         .pr-feed { display:flex; flex-direction:column; gap:0; }
-        .pr-post {
-            display:grid; grid-template-columns:140px 1fr;
-            border-bottom:1px solid #f1f5f9;
-            background:#fff; transition:background 0.15s;
-        }
+        .pr-post { display:grid; grid-template-columns:140px 1fr; border-bottom:1px solid #f1f5f9; background:#fff; transition:background 0.15s; }
         .pr-post:last-child { border-bottom:none; }
         .pr-post:hover { background:#fafbfc; }
-        .pr-post-thumb {
-            width:140px; height:140px; flex-shrink:0;
-            overflow:hidden; background:#f1f5f9;
-            display:flex; align-items:center; justify-content:center;
-        }
+        .pr-post-thumb { width:140px; height:140px; flex-shrink:0; overflow:hidden; background:#f1f5f9; display:flex; align-items:center; justify-content:center; }
         .pr-post-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
-        .pr-post-thumb-placeholder {
-            width:100%; height:100%;
-            display:flex; align-items:center; justify-content:center;
-            color:#cbd5e1; font-size:13px;
-        }
+        .pr-post-thumb-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#cbd5e1; font-size:13px; }
         .pr-post-body { padding:18px 22px; display:flex; flex-direction:column; justify-content:center; gap:6px; }
         .pr-post-meta { display:flex; align-items:center; gap:10px; }
         .pr-post-avatar { width:24px; height:24px; border-radius:50%; background:#1e293b; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:9px; flex-shrink:0; }
@@ -240,20 +209,97 @@ function renderContactFooter() {
         .pr-post-body .pr-text { font-size:13px; color:#64748b; line-height:1.6; white-space:pre-line; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
         .pr-post-body .pr-link { font-size:12px; color:#dc2626; text-decoration:none; font-weight:500; }
         .pr-post-body .pr-link:hover { text-decoration:underline; }
-        /* legacy class no longer used but kept for compat */
-        .pr-grid { display:flex; flex-direction:column; }
+
+        /* About page — Team Cards */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+        .team-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .team-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.09);
+        }
+        .team-card-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+            background: #f1f5f9;
+        }
+        .team-card-body {
+            padding: 16px 18px 18px;
+        }
+        .team-card-nickname {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: #dc2626;
+            margin-bottom: 4px;
+        }
+        .team-card-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+        .team-card-id {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+        }
+        .team-card-ig {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #64748b;
+            text-decoration: none;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 4px 12px;
+            transition: background 0.15s, color 0.15s;
+        }
+        .team-card-ig:hover {
+            background: #1e293b;
+            color: #fff;
+            border-color: #1e293b;
+        }
+        .team-card-ig svg { flex-shrink: 0; }
+
+        .about-intro {
+            padding: 20px 0 10px;
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.8;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 4px;
+        }
+
+        /* Misc */
+        .inline-form { display:inline; }
         @media (max-width:700px) {
             .pr-post { grid-template-columns:100px 1fr; }
             .pr-post-thumb { width:100px; height:100px; }
             .faculty-info { grid-template-columns:1fr; }
+            .team-grid { grid-template-columns:1fr 1fr; }
         }
     </style>
 </head>
 <body>
 
-
-
 <?php if (!isset($_SESSION['user_id'])): ?>
+
 <!-- ===== หน้า Login ===== -->
 <div class="login-page">
     <div class="login-container">
@@ -272,19 +318,20 @@ function renderContactFooter() {
                 <label><input type="radio" name="role" value="staff"> <?php echo t('role_staff'); ?></label>
             </div>
             <div class="form-group">
-                <label><?php echo $lang=='th' ? 'รหัสประจำตัว' : 'ID Number'; ?></label>
+                <label>รหัสประจำตัว</label>
                 <input type="text" name="username" required>
             </div>
             <div class="form-group">
-                <label><?php echo $lang=='th' ? 'รหัสผ่าน' : 'Password'; ?></label>
+                <label>รหัสผ่าน</label>
                 <input type="password" name="password" required>
             </div>
-            <button type="submit" name="login" class="btn-login"><?php echo $lang=='th' ? 'เข้าสู่ระบบ' : 'Login'; ?></button>
+            <button type="submit" name="login" class="btn-login">เข้าสู่ระบบ</button>
         </form>
     </div>
 </div>
 
 <?php else: ?>
+
 <!-- ===== หน้า Dashboard ===== -->
 <div class="dashboard-page">
     <aside class="sidebar">
@@ -293,11 +340,12 @@ function renderContactFooter() {
             <p class="sub-logo">Information Studies SWU</p>
         </div>
         <ul class="sidebar-menu">
-            <li><a href="?page=internship" class="<?php echo $current_page=='internship'?'active':''; ?>"><?php echo t('menu_intern'); ?></a></li>
-            <li><a href="?page=pr"         class="<?php echo $current_page=='pr'        ?'active':''; ?>"><?php echo t('menu_pr'); ?></a></li>
-            <li><a href="?page=course"     class="<?php echo $current_page=='course'    ?'active':''; ?>"><?php echo t('menu_course'); ?></a></li>
-            <li><a href="?page=teacher"    class="<?php echo $current_page=='teacher'   ?'active':''; ?>"><?php echo t('menu_teacher'); ?></a></li>
-            <li><a href="?page=student"    class="<?php echo $current_page=='student'   ?'active':''; ?>"><?php echo t('menu_student'); ?></a></li>
+            <li><a href="?page=internship" class="<?php echo $current_page=='internship' ? 'active' : ''; ?>"><?php echo t('menu_intern'); ?></a></li>
+            <li><a href="?page=pr"         class="<?php echo $current_page=='pr'         ? 'active' : ''; ?>"><?php echo t('menu_pr'); ?></a></li>
+            <li><a href="?page=course"     class="<?php echo $current_page=='course'     ? 'active' : ''; ?>"><?php echo t('menu_course'); ?></a></li>
+            <li><a href="?page=teacher"    class="<?php echo $current_page=='teacher'    ? 'active' : ''; ?>"><?php echo t('menu_teacher'); ?></a></li>
+            <li><a href="?page=student"    class="<?php echo $current_page=='student'    ? 'active' : ''; ?>"><?php echo t('menu_student'); ?></a></li>
+            <li><a href="?page=about"      class="<?php echo $current_page=='about'      ? 'active' : ''; ?>"><?php echo t('menu_about'); ?></a></li>
             <li class="logout-link"><a href="home.php?logout=true"><?php echo t('logout'); ?></a></li>
         </ul>
     </aside>
@@ -316,7 +364,7 @@ function renderContactFooter() {
         <?php switch ($current_page):
 
             // ==========================================
-            // 1. หน้าข้อมูลการฝึกงาน
+            // 1. ข้อมูลการฝึกงาน
             // ==========================================
             case 'internship':
                 if (isset($_GET['staff_updated'])): ?>
@@ -331,31 +379,26 @@ function renderContactFooter() {
                     <div class="card">
                         <div class="card-header-flex">
                             <div>
-                                <h4><?php echo $lang=='th' ? 'สถานะการฝึกงานของคุณ' : 'Your Internship Status'; ?></h4>
-                                <p class="text-muted"><?php echo $lang=='th' ? 'ตรวจสอบความคืบหน้าแบบ Real-time' : 'Track your status in real-time'; ?></p>
+                                <h4>สถานะการฝึกงานของคุณ</h4>
+                                <p class="text-muted">ตรวจสอบความคืบหน้าแบบ Real-time</p>
                             </div>
                             <a href="?page=request_form" class="btn-action primary"><?php echo t('btn_submit'); ?></a>
                         </div>
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th><?php echo $lang=='th' ? 'รหัสคำร้อง' : 'Doc No.'; ?></th>
-                                    <th><?php echo $lang=='th' ? 'บริษัท / สถานประกอบการ' : 'Company'; ?></th>
-                                    <th><?php echo $lang=='th' ? 'วันที่เริ่ม' : 'Start Date'; ?></th>
-                                    <th><?php echo $lang=='th' ? 'วันที่สิ้นสุด' : 'End Date'; ?></th>
-                                    <th><?php echo $lang=='th' ? 'วันที่ยื่น' : 'Submitted'; ?></th>
-                                    <th><?php echo $lang=='th' ? 'สถานะ' : 'Status'; ?></th>
+                                    <th>รหัสคำร้อง</th>
+                                    <th>บริษัท / สถานประกอบการ</th>
+                                    <th>วันที่เริ่ม</th>
+                                    <th>วันที่สิ้นสุด</th>
+                                    <th>วันที่ยื่น</th>
+                                    <th>สถานะ</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
                                 $stu_id = $_SESSION['user_id'];
-                                $stmt = $conn->prepare(
-                                    "SELECT req_id, com_name, start_date, end_date, req_date, status_now
-                                     FROM request
-                                     WHERE stu_id = ?
-                                     ORDER BY req_id DESC"
-                                );
+                                $stmt = $conn->prepare("SELECT req_id, com_name, start_date, end_date, req_date, status_now FROM request WHERE stu_id = ? ORDER BY req_id DESC");
                                 $stmt->bind_param("s", $stu_id);
                                 $stmt->execute();
                                 $req_result = $stmt->get_result();
@@ -371,9 +414,7 @@ function renderContactFooter() {
                                         </tr>
                                     <?php endwhile;
                                 else: ?>
-                                    <tr><td colspan="6" class="text-center empty-state">
-                                        <?php echo $lang=='th' ? 'ยังไม่มีข้อมูลคำร้องในระบบ' : 'No requests found'; ?>
-                                    </td></tr>
+                                    <tr><td colspan="6" class="text-center empty-state">ยังไม่มีข้อมูลคำร้องในระบบ</td></tr>
                                 <?php endif; ?>
                             </tbody>
                         </table>
@@ -384,9 +425,8 @@ function renderContactFooter() {
                 // ----- STAFF -----
                 elseif ($_SESSION['role'] == 'staff'): ?>
                     <div class="card">
-                        <h4><?php echo $lang=='th' ? 'จัดการข้อมูลคำร้องทั้งหมด' : 'Manage All Requests'; ?></h4>
-                        <p class="text-muted"><?php echo $lang=='th' ? 'เลือกสถานะใหม่แล้วกด "บันทึก" เพื่ออัปเดตทีละรายการ' : 'Select new status and click Save to update'; ?></p>
-
+                        <h4>จัดการข้อมูลคำร้องทั้งหมด</h4>
+                        <p class="text-muted">เลือกสถานะใหม่แล้วกด "บันทึก" เพื่ออัปเดตทีละรายการ</p>
                         <table class="data-table">
                             <thead>
                                 <tr>
@@ -401,9 +441,7 @@ function renderContactFooter() {
                             </thead>
                             <tbody>
                                 <?php
-                                $req_result = $conn->query(
-                                    "SELECT * FROM request ORDER BY req_id DESC"
-                                );
+                                $req_result = $conn->query("SELECT * FROM request ORDER BY req_id DESC");
                                 if ($req_result && $req_result->num_rows > 0):
                                     while ($row = $req_result->fetch_assoc()):
                                         $cs = (int)$row['status_now']; ?>
@@ -444,7 +482,7 @@ function renderContactFooter() {
                 // ----- TEACHER -----
                 elseif ($_SESSION['role'] == 'teacher'): ?>
                     <div class="card">
-                        <h4><?php echo $lang=='th' ? 'รายการคำร้องรอการอนุมัติ / บันทึกผล' : 'Pending Approvals / Record Results'; ?></h4>
+                        <h4>รายการคำร้องรอการอนุมัติ / บันทึกผล</h4>
                         <table class="data-table">
                             <thead>
                                 <tr>
@@ -459,9 +497,7 @@ function renderContactFooter() {
                             </thead>
                             <tbody>
                                 <?php
-                                $req_result = $conn->query(
-                                    "SELECT * FROM request ORDER BY req_id DESC"
-                                );
+                                $req_result = $conn->query("SELECT * FROM request ORDER BY req_id DESC");
                                 if ($req_result && $req_result->num_rows > 0):
                                     while ($row = $req_result->fetch_assoc()): ?>
                                         <tr>
@@ -511,8 +547,8 @@ function renderContactFooter() {
                 } ?>
                 <div class="card">
                     <div class="card-header-flex">
-                        <h4><?php echo $lang=='th' ? 'แบบฟอร์มยื่นคำร้องขอฝึกงาน' : 'Internship Request Form'; ?></h4>
-                        <a href="?page=internship" class="btn-small text-only"><?php echo $lang=='th' ? 'กลับไปหน้าข้อมูล' : 'Back to Info'; ?></a>
+                        <h4>แบบฟอร์มยื่นคำร้องขอฝึกงาน</h4>
+                        <a href="?page=internship" class="btn-small text-only">กลับไปหน้าข้อมูล</a>
                     </div>
                     <hr class="divider">
 
@@ -523,39 +559,37 @@ function renderContactFooter() {
                     <form method="POST" action="home.php?page=request_form" class="submit-form">
                         <div class="form-row">
                             <div class="form-group-half">
-                                <label><?php echo $lang=='th' ? 'รหัสนิสิต' : 'Student ID'; ?></label>
+                                <label>รหัสนิสิต</label>
                                 <input type="text" value="<?php echo htmlspecialchars($_SESSION['user_id']); ?>" readonly class="readonly-input">
                             </div>
                             <div class="form-group-half">
-                                <label><?php echo $lang=='th' ? 'ชื่อ-นามสกุล' : 'Full Name'; ?></label>
+                                <label>ชื่อ-นามสกุล</label>
                                 <input type="text" value="<?php echo htmlspecialchars($_SESSION['user_name']); ?>" readonly class="readonly-input">
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label><?php echo $lang=='th' ? 'ชื่อบริษัท / สถานประกอบการ' : 'Company Name'; ?></label>
+                            <label>ชื่อบริษัท / สถานประกอบการ</label>
                             <input type="text" name="com_name"
                                    value="<?php echo isset($_POST['com_name']) ? htmlspecialchars($_POST['com_name']) : ''; ?>"
-                                   placeholder="<?php echo $lang=='th' ? 'เช่น บริษัท ABC จำกัด' : 'e.g. ABC Co., Ltd.'; ?>" required>
+                                   placeholder="เช่น บริษัท ABC จำกัด" required>
                         </div>
 
                         <div class="form-row">
                             <div class="form-group-half">
-                                <label><?php echo $lang=='th' ? 'วันที่เริ่มฝึกงาน' : 'Start Date'; ?></label>
+                                <label>วันที่เริ่มฝึกงาน</label>
                                 <input type="date" name="start_date"
                                        value="<?php echo isset($_POST['start_date']) ? htmlspecialchars($_POST['start_date']) : ''; ?>" required>
                             </div>
                             <div class="form-group-half">
-                                <label><?php echo $lang=='th' ? 'วันที่สิ้นสุดการฝึกงาน' : 'End Date'; ?></label>
+                                <label>วันที่สิ้นสุดการฝึกงาน</label>
                                 <input type="date" name="end_date"
                                        value="<?php echo isset($_POST['end_date']) ? htmlspecialchars($_POST['end_date']) : ''; ?>" required>
                             </div>
                         </div>
 
                         <div class="form-actions">
-                            <button type="submit" name="submit_request" class="btn-action primary">
-                                <?php echo $lang=='th' ? 'บันทึกข้อมูล' : 'Submit'; ?>
-                            </button>
+                            <button type="submit" name="submit_request" class="btn-action primary">บันทึกข้อมูล</button>
                         </div>
                     </form>
                 </div>
@@ -567,188 +601,246 @@ function renderContactFooter() {
             // ==========================================
             case 'pr': ?>
                 <div class="card info-card">
-                    <h4><?php echo $lang=='th' ? 'ข่าวสารและประชาสัมพันธ์ สาขาสารสนเทศศึกษา' : 'IS SWU News & PR'; ?></h4>
-                    <p class="text-muted"><?php echo $lang=='th' ? 'ติดตามกิจกรรม ประกาศการฝึกงาน และความเคลื่อนไหวของสาขาได้ตามช่องทางด้านล่างนี้' : 'Follow our official channels for the latest updates.'; ?></p>
+                    <h4>ข่าวสารและประชาสัมพันธ์ สาขาสารสนเทศศึกษา</h4>
+                    <p class="text-muted">ติดตามกิจกรรม ประกาศการฝึกงาน และความเคลื่อนไหวของสาขาได้ตามช่องทางด้านล่างนี้</p>
                     <ul class="clean-list">
                         <li>Instagram: <a href="https://www.instagram.com/is.hmswu/" target="_blank">@is.hmswu</a></li>
                         <li>Website: <a href="https://is.hu.swu.ac.th/" target="_blank">is.hu.swu.ac.th</a></li>
                     </ul>
                 </div>
 
-                <!-- PR Posts — minimal feed -->
                 <div class="card" style="padding:0; overflow:hidden; border-radius:8px 8px 0 0; margin-bottom:0;">
-                <div class="pr-feed">
-
-                    <!-- โพสต์ที่ 1: IS111 กิจกรรมโต้วาที -->
-                    <div class="pr-post">
-                        <div class="pr-post-thumb">
-                            <div class="pr-post-thumb-placeholder">ไม่มีรูปภาพ</div>
-                        </div>
-                        <div class="pr-post-body">
-                            <div class="pr-post-meta">
-                                <div class="pr-post-avatar">IS</div>
-                                <span class="pr-post-account">is.hmswu</span>
-                                <span class="pr-post-date">6 กุมภาพันธ์ 2569</span>
+                    <div class="pr-feed">
+                        <div class="pr-post">
+                            <div class="pr-post-thumb">
+                                <div class="pr-post-thumb-placeholder">ไม่มีรูปภาพ</div>
                             </div>
-                            <div class="pr-tags">#IS111 #สารสนเทศศึกษา #SWU</div>
-                            <div class="pr-post-title">IS111 การรู้สารสนเทศและรู้เท่าทันสื่อ</div>
-                            <div class="pr-text">กิจกรรมโต้วาที ภาคเรียนที่ 1/2568 หลักสูตรศิลปศาสตรบัณฑิต สาขาวิชาสารสนเทศศึกษา คณะมนุษยศาสตร์ มหาวิทยาลัยศรีนครินทรวิโรฒ</div>
-                            <a href="https://is.hu.swu.ac.th/is111/" target="_blank" class="pr-link">อ่านเพิ่มเติม →</a>
+                            <div class="pr-post-body">
+                                <div class="pr-post-meta">
+                                    <div class="pr-post-avatar">IS</div>
+                                    <span class="pr-post-account">is.hmswu</span>
+                                    <span class="pr-post-date">6 กุมภาพันธ์ 2569</span>
+                                </div>
+                                <div class="pr-tags">#IS111 #สารสนเทศศึกษา #SWU</div>
+                                <div class="pr-post-title">IS111 การรู้สารสนเทศและรู้เท่าทันสื่อ</div>
+                                <div class="pr-text">กิจกรรมโต้วาที ภาคเรียนที่ 1/2568 หลักสูตรศิลปศาสตรบัณฑิต สาขาวิชาสารสนเทศศึกษา คณะมนุษยศาสตร์ มหาวิทยาลัยศรีนครินทรวิโรฒ</div>
+                                <a href="https://is.hu.swu.ac.th/is111/" target="_blank" class="pr-link">อ่านเพิ่มเติม →</a>
+                            </div>
+                        </div>
+
+                        <div class="pr-post">
+                            <div class="pr-post-thumb">
+                                <img src="https://is.hu.swu.ac.th/wp-content/uploads/2025/02/GDCatalog2-1140x458.jpg" alt="Government Data Catalog Day 2024">
+                            </div>
+                            <div class="pr-post-body">
+                                <div class="pr-post-meta">
+                                    <div class="pr-post-avatar">IS</div>
+                                    <span class="pr-post-account">is.hmswu</span>
+                                    <span class="pr-post-date">21 กุมภาพันธ์ 2568</span>
+                                </div>
+                                <div class="pr-tags">#GDCatalog #OpenData #SWU #สารสนเทศศึกษา</div>
+                                <div class="pr-post-title">Government Data Catalog Day 2024: Insights and Impact</div>
+                                <div class="pr-text">คณาจารย์หลักสูตรสารสนเทศศึกษา เข้าร่วมงานประชุมสัมมนา Government Data Catalog Day 2024 และได้รับรางวัลหน่วยงานด้านการศึกษาที่ใช้ข้อมูลสาธารณะจากภาครัฐดีเด่น</div>
+                                <a href="https://is.hu.swu.ac.th/gdcatalog/" target="_blank" class="pr-link">อ่านเพิ่มเติม →</a>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- โพสต์ที่ 2: Government Data Catalog Day 2024 -->
-                    <div class="pr-post">
-                        <div class="pr-post-thumb">
-                            <img src="https://is.hu.swu.ac.th/wp-content/uploads/2025/02/GDCatalog2-1140x458.jpg" alt="Government Data Catalog Day 2024">
-                        </div>
-                        <div class="pr-post-body">
-                            <div class="pr-post-meta">
-                                <div class="pr-post-avatar">IS</div>
-                                <span class="pr-post-account">is.hmswu</span>
-                                <span class="pr-post-date">21 กุมภาพันธ์ 2568</span>
-                            </div>
-                            <div class="pr-tags">#GDCatalog #OpenData #SWU #สารสนเทศศึกษา</div>
-                            <div class="pr-post-title">Government Data Catalog Day 2024: Insights and Impact</div>
-                            <div class="pr-text">คณาจารย์หลักสูตรสารสนเทศศึกษา เข้าร่วมงานประชุมสัมมนา Government Data Catalog Day 2024 และได้รับรางวัลหน่วยงานด้านการศึกษาที่ใช้ข้อมูลสาธารณะจากภาครัฐดีเด่น</div>
-                            <a href="https://is.hu.swu.ac.th/gdcatalog/" target="_blank" class="pr-link">อ่านเพิ่มเติม →</a>
-                        </div>
-                    </div>
-
-                </div>
                 </div>
 
-                <!-- โพสต์ที่ 3 แยก card (เต็มความกว้าง) รวมเข้า feed เดิม -->
                 <div class="card" style="padding:0; overflow:hidden; margin-top:0; border-top:none; border-radius:0 0 8px 8px; border-top:1px solid #f1f5f9;">
-                <div class="pr-feed">
-                    <div class="pr-post">
-                        <div class="pr-post-thumb">
-                            <img src="https://hu.swu.ac.th/Portals/5/EasyDNNNews/12571/600600p2228EDNmainimg-1611.jpg" alt="โครงการพัฒนาระบบสารสนเทศ">
-                        </div>
-                        <div class="pr-post-body">
-                            <div class="pr-post-meta">
-                                <div class="pr-post-avatar">IS</div>
-                                <span class="pr-post-account">is.hmswu</span>
-                                <span class="pr-post-date">16 มีนาคม 2569</span>
+                    <div class="pr-feed">
+                        <div class="pr-post">
+                            <div class="pr-post-thumb">
+                                <img src="https://hu.swu.ac.th/Portals/5/EasyDNNNews/12571/600600p2228EDNmainimg-1611.jpg" alt="โครงการพัฒนาระบบสารสนเทศ">
                             </div>
-                            <div class="pr-tags">#HumanitiesSWU #DigitalTransformation #Automation #CyberSecurity</div>
-                            <div class="pr-post-title">โครงการ "พัฒนาระบบสารสนเทศเพื่อการบริหารจัดการองค์กร"</div>
-                            <div class="pr-text">คณะมนุษยศาสตร์ มหาวิทยาลัยศรีนครินทรวิโรฒ อบรมเชิงปฏิบัติการด้าน Automation, Workflow และ Cyber Security เพื่อเสริมทักษะการใช้เทคโนโลยีในการบริหารจัดการงาน</div>
-                            <a href="https://hu.swu.ac.th/news/โครงการ-พัฒนาระบบสารสนเทศเพื่อการบริหารจัดการองค์กร" target="_blank" class="pr-link">อ่านเพิ่มเติม →</a>
+                            <div class="pr-post-body">
+                                <div class="pr-post-meta">
+                                    <div class="pr-post-avatar">IS</div>
+                                    <span class="pr-post-account">is.hmswu</span>
+                                    <span class="pr-post-date">16 มีนาคม 2569</span>
+                                </div>
+                                <div class="pr-tags">#HumanitiesSWU #DigitalTransformation #Automation #CyberSecurity</div>
+                                <div class="pr-post-title">โครงการ "พัฒนาระบบสารสนเทศเพื่อการบริหารจัดการองค์กร"</div>
+                                <div class="pr-text">คณะมนุษยศาสตร์ มหาวิทยาลัยศรีนครินทรวิโรฒ อบรมเชิงปฏิบัติการด้าน Automation, Workflow และ Cyber Security เพื่อเสริมทักษะการใช้เทคโนโลยีในการบริหารจัดการงาน</div>
+                                <a href="https://hu.swu.ac.th/news/โครงการ-พัฒนาระบบสารสนเทศเพื่อการบริหารจัดการองค์กร" target="_blank" class="pr-link">อ่านเพิ่มเติม →</a>
+                            </div>
                         </div>
                     </div>
-                </div>
                 </div>
 
                 <?php renderContactFooter();
                 break;
 
             // ==========================================
-            // 4. หลักสูตร (แบบไม่มีจุด Bullet Points)
+            // 4. เกี่ยวกับเรา
+            // ==========================================
+            case 'about': ?>
+                <div class="card">
+                    <h4>เกี่ยวกับเรา · About us</h4>
+                    <div class="about-intro">
+                        พวกเราทีมพัฒนาระบบ IS Internship จากนิสิตชั้นปีที่ 2 คณะมนุษยศาสตร์ สาขาวิชาสารสนเทศศึกษา มหาวิทยาลัยศรีนครินทรวิโรฒ<br>
+                        เพื่อรองรับการจัดการข้อมูลและติดตามสถานะการฝึกงานของนิสิตในสาขาเรา พวกเราหวังอย่างยิ่งว่า ระบบที่เราทำจะมีส่วนช่วยในการพัฒนาองกรณ์ไปในทางที่ดีขึ้น
+                    </div>
+
+                    <div class="team-grid">
+
+                        <div class="team-card">
+                            <img class="team-card-img" src="memberpic/chorfon.png" alt="ช่อผกา"
+                                 onerror="this.src='https://ui-avatars.com/api/?name=ช่อผกา&background=dc2626&color=fff&size=300'">
+                            <div class="team-card-body">
+                                <div class="team-card-nickname">ช่อฝน · Chorfon</div>
+                                <div class="team-card-name">ช่อผกา มาลัยจรูญ</div>
+                                <div class="team-card-id">67101010660</div>
+                                <a href="https://www.instagram.com/rainonfl0wers" target="_blank" class="team-card-ig">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                                    rainonfl0wers
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="team-card">
+                            <img class="team-card-img" src="memberpic/nine.png" alt="ณฤเมธ"
+                                 onerror="this.src='https://ui-avatars.com/api/?name=ณฤเมธ&background=1e293b&color=fff&size=300'">
+                            <div class="team-card-body">
+                                <div class="team-card-nickname">นาย · Nine</div>
+                                <div class="team-card-name">ณฤเมธ นฤพัคโภคิน</div>
+                                <div class="team-card-id">67101010662</div>
+                                <a href="https://www.instagram.com/nine_nalumate" target="_blank" class="team-card-ig">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                                    nine_nalumate
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="team-card">
+                            <img class="team-card-img" src="memberpic/ohm.png" alt="พรธนาศักดิ์"
+                                 onerror="this.src='https://ui-avatars.com/api/?name=พรธนาศักดิ์&background=003366&color=fff&size=300'">
+                            <div class="team-card-body">
+                                <div class="team-card-nickname">โอม · Ohm</div>
+                                <div class="team-card-name">พรธนาศักดิ์ คำฟัก</div>
+                                <div class="team-card-id">67101010677</div>
+                                <a href="https://www.instagram.com/_ohmmygods" target="_blank" class="team-card-ig">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                                    _ohmmygods
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="team-card">
+                            <img class="team-card-img" src="memberpic/mitr.png" alt="รพีภัทร"
+                                 onerror="this.src='https://ui-avatars.com/api/?name=รพีภัทร&background=0f766e&color=fff&size=300'">
+                            <div class="team-card-body">
+                                <div class="team-card-nickname">มิตร · Mitr</div>
+                                <div class="team-card-name">รพีภัทร เรืองทอง</div>
+                                <div class="team-card-id">67101010687</div>
+                                <a href="https://www.instagram.com/normalmitr" target="_blank" class="team-card-ig">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                                    normalmitr
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="team-card">
+                            <img class="team-card-img" src="memberpic/sundae.png" alt="อนุสรณ์"
+                                 onerror="this.src='https://ui-avatars.com/api/?name=อนุสรณ์&background=a16207&color=fff&size=300'">
+                            <div class="team-card-body">
+                                <div class="team-card-nickname">ซันเด · Sundae</div>
+                                <div class="team-card-name">อนุสรณ์ เชียงหนุ้น</div>
+                                <div class="team-card-id">67101010692</div>
+                                <a href="https://www.instagram.com/ddej.javu" target="_blank" class="team-card-ig">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                                    ddej.javu
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="team-card">
+                            <img class="team-card-img" src="memberpic/moowan.png" alt="อิสรีย์"
+                                 onerror="this.src='https://ui-avatars.com/api/?name=อิสรีย์&background=b91c1c&color=fff&size=300'">
+                            <div class="team-card-body">
+                                <div class="team-card-nickname">หมูหวาน · Moowan</div>
+                                <div class="team-card-name">อิสรีย์ วัฒนเกษมวงศ์</div>
+                                <div class="team-card-id">67101010695</div>
+                                <a href="https://www.instagram.com/isrmoowan" target="_blank" class="team-card-ig">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+                                    isrmoowan
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <?php renderContactFooter();
+                break;
+
+            // ==========================================
+            // 5. หลักสูตร
             // ==========================================
             case 'course': ?>
-                <style>
-                    /* CSS เฉพาะส่วนเนื้อหาหลักสูตร */
-                    .course-section { margin-bottom: 25px; }
-                    .course-section h3 { 
-                        color: #003366; 
-                        font-size: 1.25rem; 
-                        margin-bottom: 12px; 
-                        border-bottom: 1px solid #eee; 
-                        padding-bottom: 5px;
-                    }
-                    .course-item { 
-                        margin-bottom: 10px; 
-                        padding-left: 5px;
-                        line-height: 1.6;
-                    }
-                    .course-item strong { color: #333; }
-                    .text-indent { padding-left: 20px; }
-                    .course-quote { 
-                        font-style: italic; 
-                        color: #555; 
-                        background: #fcfcfc; 
-                        padding: 15px; 
-                        border-left: 4px solid #003366;
-                        margin-bottom: 25px;
-                    }
-                </style>
-
                 <div class="card">
-                    <h4><?php echo $lang=='th' ? 'หลักสูตรศิลปศาสตรบัณฑิต สาขาวิชาสารสนเทศศึกษา' : 'B.A. Program in Information Studies'; ?></h4>
-                    
-                    <div class="course-quote">
-                        <?php echo $lang=='th' ? 'ปรัชญา: "สารสนเทศสร้างปัญญา ปัญญาสร้างคุณค่าให้สังคม"' : 'Philosophy: "Information creates wisdom, wisdom creates value for society"'; ?>
+                    <h4>หลักสูตรศิลปศาสตรบัณฑิต สาขาวิชาสารสนเทศศึกษา</h4>
+
+                    <div class="course-quote">ปรัชญา: "สารสนเทศสร้างปัญญา ปัญญาสร้างคุณค่าให้สังคม"</div>
+
+                    <div class="course-section">
+                        <div class="course-item"><strong>รหัสหลักสูตร:</strong> 25520091104002</div>
                     </div>
 
-                    <?php if ($lang == 'th'): ?>
-                        <div class="course-section">
-                            <div class="course-item"><strong>รหัสหลักสูตร:</strong> 25520091104002</div>
-                        </div>
+                    <div class="course-section">
+                        <h3>1. ชื่อหลักสูตรและวุฒิการศึกษา</h3>
+                        <div class="course-item"><strong>ชื่อภาษาไทย:</strong> ศิลปศาสตรบัณฑิต (ศศ.บ.) สาขาวิชาสารสนเทศศึกษา</div>
+                        <div class="course-item"><strong>ชื่อภาษาอังกฤษ:</strong> Bachelor of Arts (Information Studies)</div>
+                        <div class="course-item"><strong>อักษรย่อ:</strong> B.A. (Information Studies)</div>
+                    </div>
 
-                        <div class="course-section">
-                            <h3>1. ชื่อหลักสูตรและวุฒิการศึกษา</h3>
-                            <div class="course-item"><strong>ชื่อภาษาไทย:</strong> ศิลปศาสตรบัณฑิต (ศศ.บ.) สาขาวิชาสารสนเทศศึกษา</div>
-                            <div class="course-item"><strong>ชื่อภาษาอังกฤษ:</strong> Bachelor of Arts (Information Studies)</div>
-                            <div class="course-item"><strong>อักษรย่อ:</strong> B.A. (Information Studies)</div>
-                        </div>
+                    <div class="course-section">
+                        <h3>2. เจาะลึกวิชาเรียน (กลุ่มวิชาเอก)</h3>
+                        <p class="course-item">หลักสูตรแบ่งกลุ่มวิชาเพื่อให้ครอบคลุมการทำงานทั้งรูปแบบดั้งเดิมและเทคโนโลยีสมัยใหม่:</p>
+                        <div class="course-item text-indent"><strong>การจัดการสารสนเทศ:</strong> เรียนรู้การวิเคราะห์ จัดหมวดหมู่ และจัดเก็บข้อมูลอย่างเป็นระบบ</div>
+                        <div class="course-item text-indent"><strong>เทคโนโลยีสารสนเทศ:</strong> การเขียนโปรแกรมเบื้องต้น การจัดการฐานข้อมูล และการพัฒนาเว็บไซต์</div>
+                        <div class="course-item text-indent"><strong>การจัดการนวัตกรรมและคอนเทนต์:</strong> การสร้างสรรค์เนื้อหาดิจิทัล การตลาดสารสนเทศ และการใช้ AI</div>
+                        <div class="course-item text-indent"><strong>การบริการสารสนเทศ:</strong> จิตวิทยาการบริการ และการถ่ายทอดความรู้</div>
+                    </div>
 
-                        <div class="course-section">
-                            <h3>2. เจาะลึกวิชาเรียน (กลุ่มวิชาเอก)</h3>
-                            <p class="course-item">หลักสูตรแบ่งกลุ่มวิชาเพื่อให้ครอบคลุมการทำงานทั้งรูปแบบดั้งเดิมและเทคโนโลยีสมัยใหม่:</p>
-                            <div class="course-item text-indent"><strong>การจัดการสารสนเทศ:</strong> เรียนรู้การวิเคราะห์ จัดหมวดหมู่ และจัดเก็บข้อมูลอย่างเป็นระบบ</div>
-                            <div class="course-item text-indent"><strong>เทคโนโลยีสารสนเทศ:</strong> การเขียนโปรแกรมเบื้องต้น การจัดการฐานข้อมูล และการพัฒนาเว็บไซต์</div>
-                            <div class="course-item text-indent"><strong>การจัดการนวัตกรรมและคอนเทนต์:</strong> การสร้างสรรค์เนื้อหาดิจิทัล การตลาดสารสนเทศ และการใช้ AI</div>
-                            <div class="course-item text-indent"><strong>การบริการสารสนเทศ:</strong> จิตวิทยาการบริการ และการถ่ายทอดความรู้</div>
-                        </div>
+                    <div class="course-section">
+                        <h3>3. จุดเด่นของสาขา</h3>
+                        <div class="course-item"><strong>ความร่วมมือกับภาคเอกชน:</strong> มีวิทยากรจากวงการ Digital Agency และ Data Analyst</div>
+                        <div class="course-item"><strong>ทักษะที่หลากหลาย:</strong> ผสมผสานศาสตร์มนุษย์และศาสตร์ข้อมูลเข้าด้วยกัน</div>
+                        <div class="course-item"><strong>ห้องปฏิบัติการ:</strong> มีเครื่องมือและซอฟต์แวร์ที่ทันสมัยสำหรับการฝึกปฏิบัติจริง</div>
+                    </div>
 
-                        <div class="course-section">
-                            <h3>3. จุดเด่นของสาขา</h3>
-                            <div class="course-item"><strong>ความร่วมมือกับภาคเอกชน:</strong> มีวิทยากรจากวงการ Digital Agency และ Data Analyst</div>
-                            <div class="course-item"><strong>ทักษะที่หลากหลาย:</strong> ผสมผสานศาสตร์มนุษย์และศาสตร์ข้อมูลเข้าด้วยกัน</div>
-                            <div class="course-item"><strong>ห้องปฏิบัติการ:</strong> มีเครื่องมือและซอฟต์แวร์ที่ทันสมัยสำหรับการฝึกปฏิบัติจริง</div>
-                        </div>
+                    <div class="course-section">
+                        <h3>4. แนวทางการประกอบอาชีพ</h3>
+                        <div class="course-item">นักจัดการสารสนเทศและข้อมูล (Information Manager)</div>
+                        <div class="course-item">นักจดหมายเหตุ หรือ บรรณารักษ์ยุคใหม่ (Modern Librarian)</div>
+                        <div class="course-item">Content Creator และ Digital Content Manager</div>
+                        <div class="course-item">Data Curator และ Knowledge Manager ในองค์กรชั้นนำ</div>
+                    </div>
 
-                        <div class="course-section">
-                            <h3>4. แนวทางการประกอบอาชีพ</h3>
-                            <div class="course-item">นักจัดการสารสนเทศและข้อมูล (Information Manager)</div>
-                            <div class="course-item">นักจดหมายเหตุ หรือ บรรณารักษ์ยุคใหม่ (Modern Librarian)</div>
-                            <div class="course-item">Content Creator และ Digital Content Manager</div>
-                            <div class="course-item">Data Curator และ Knowledge Manager ในองค์กรชั้นนำ</div>
+                    <div class="course-section">
+                        <h3>5. เกณฑ์การคัดเลือก ปี 2569 (TCAS)</h3>
+                        <div class="course-item"><strong>ภาคปกติ:</strong> รอบที่ 1 (Portfolio) 10 คน | รอบที่ 3 (Admission) 40 คน</div>
+                        <div class="course-item"><strong>ภาคพิเศษ:</strong> รอบที่ 3 (Admission) 40 คน</div>
+                        <div class="course-item" style="font-size:0.9rem; color:#777; margin-top:10px;">
+                            *พิจารณาจาก GPAX และคะแนน TGAT / A-Level ตามเกณฑ์ของมหาวิทยาลัย
                         </div>
+                    </div>
 
-                        <div class="course-section">
-                            <h3>5. เกณฑ์การคัดเลือก ปี 2569 (TCAS)</h3>
-                            <div class="course-item"><strong>ภาคปกติ:</strong> รอบที่ 1 (Portfolio) 10 คน | รอบที่ 3 (Admission) 40 คน</div>
-                            <div class="course-item"><strong>ภาคพิเศษ:</strong> รอบที่ 3 (Admission) 40 คน</div>
-                            <div class="course-item" style="font-size: 0.9rem; color: #777; margin-top: 10px;">
-                                *พิจารณาจาก GPAX และคะแนน TGAT / A-Level ตามเกณฑ์ของมหาวิทยาลัย
-                            </div>
-                        </div>
-
-                        <a href="https://drive.google.com/file/d/1YNrk2CEBeDCe-GRXs-C_T1rvzxw6g_L2/view" target="_blank" class="course-link">รายละเอียดหลักสูตรฉบับปรับปรุง พ.ศ.2565</a>
-                        
-                    <?php else: ?>
-                        <div class="course-section">
-                            <h3>Program Overview</h3>
-                            <div class="course-item">Focused on producing graduates skilled in information management and digital transformation.</div>
-                            <div class="course-item"><strong>Core Areas:</strong> IT, Data Analytics, and Content Creation.</div>
-                        </div>
-                    <?php endif; ?>
+                    <a href="https://drive.google.com/file/d/1YNrk2CEBeDCe-GRXs-C_T1rvzxw6g_L2/view" target="_blank" class="course-link">รายละเอียดหลักสูตรฉบับปรับปรุง พ.ศ.2565</a>
                 </div>
                 <?php renderContactFooter();
                 break;
 
             // ==========================================
-            // 5. คณาจารย์
+            // 6. คณาจารย์
             // ==========================================
             case 'teacher': ?>
                 <div class="card">
-                    <h4><?php echo $lang == 'th' ? 'คณาจารย์ประจำหลักสูตร' : 'Faculty Members'; ?></h4>
-                    <h5 class="faculty-section-title"><?php echo $lang == 'th' ? 'คณะกรรมการหลักสูตร' : 'Curriculum Committee'; ?></h5>
+                    <h4>คณาจารย์ประจำหลักสูตร</h4>
+                    <h5 class="faculty-section-title">คณะกรรมการหลักสูตร</h5>
 
                     <div class="faculty-item">
-                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2021/01/Dit-scaled.jpg" alt="TEACHER1">
+                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2021/01/Dit-scaled.jpg" alt="อ.ดร.ดิษฐ์">
                         <div class="faculty-info">
                             <div class="fname">อาจารย์ ดร. ดิษฐ์ สุทธิวงศ์ <small>(ประธานกรรมการบริหารหลักสูตร)</small></div>
                             <div class="feng">Lecturer Dit Suthiwong, Ph.D.</div>
@@ -757,7 +849,7 @@ function renderContactFooter() {
                     </div>
 
                     <div class="faculty-item">
-                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2021/01/thiti-scaled.jpg" alt="">
+                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2021/01/thiti-scaled.jpg" alt="อ.ดร.ฐิติ">
                         <div class="faculty-info">
                             <div class="fname">อาจารย์ ดร. ฐิติ อติชาติชยากร <small>(เลขานุการหลักสูตร)</small></div>
                             <div class="feng">Lecturer Thiti Atichartchayakorn, Ph.D.</div>
@@ -766,7 +858,7 @@ function renderContactFooter() {
                     </div>
 
                     <div class="faculty-item">
-                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2020/02/Vipakorn-683x1024.jpg" alt="">
+                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2020/02/Vipakorn-683x1024.jpg" alt="ผศ.ดร.วิภากร">
                         <div class="faculty-info">
                             <div class="fname">ผู้ช่วยศาสตราจารย์ ดร. วิภากร วัฒนสินธุ์</div>
                             <div class="feng">Assistant Professor Vipakorn Vadhanasin, Ph.D., PMP, FHEA</div>
@@ -775,7 +867,7 @@ function renderContactFooter() {
                     </div>
 
                     <div class="faculty-item">
-                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2025/02/Chokthamrong.jpg" alt="">
+                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2025/02/Chokthamrong.jpg" alt="อ.ดร.โชคธำรงค์">
                         <div class="faculty-info">
                             <div class="fname">อาจารย์ ดร. โชคธำรงค์ จงจอหอ</div>
                             <div class="feng">Lecturer Chokthamrong Chongchorhor, Ph.D.</div>
@@ -784,7 +876,7 @@ function renderContactFooter() {
                     </div>
 
                     <div class="faculty-item">
-                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2025/11/Chotima.jpg" alt="">
+                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2025/11/Chotima.jpg" alt="อ.โชติมา">
                         <div class="faculty-info">
                             <div class="fname">อาจารย์โชติมา วัฒนะ</div>
                             <div class="feng">Lecturer Chotima Watana</div>
@@ -792,10 +884,10 @@ function renderContactFooter() {
                         </div>
                     </div>
 
-                    <h5 class="faculty-section-title"><?php echo $lang == 'th' ? 'ผู้ช่วยศาสตราจารย์' : 'Instructors'; ?></h5>
+                    <h5 class="faculty-section-title">ผู้ช่วยศาสตราจารย์</h5>
 
                     <div class="faculty-item">
-                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2020/02/Dussadee-683x1024.jpg" alt="">
+                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2020/02/Dussadee-683x1024.jpg" alt="ผศ.ดร.ดุษฎี">
                         <div class="faculty-info">
                             <div class="fname">ผู้ช่วยศาสตราจารย์ ดร. ดุษฎี สีวังคำ</div>
                             <div class="feng">Assistant Professor Dussadee Seewungkum, Ph.D.</div>
@@ -804,7 +896,7 @@ function renderContactFooter() {
                     </div>
 
                     <div class="faculty-item">
-                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2020/02/Sasipimol-683x1024.jpg" alt="">
+                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2020/02/Sasipimol-683x1024.jpg" alt="ผศ.ดร.ศศิพิมล">
                         <div class="faculty-info">
                             <div class="fname">ผู้ช่วยศาสตราจารย์ ดร. ศศิพิมล ประพินพงศกร</div>
                             <div class="feng">Assistant Professor Sasipimol Prapinpongsakorn, Ph.D., FHEA</div>
@@ -813,7 +905,7 @@ function renderContactFooter() {
                     </div>
 
                     <div class="faculty-item">
-                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2020/02/Sumattra-683x1024.jpg" alt="">
+                        <img src="https://is.hu.swu.ac.th/wp-content/uploads/2020/02/Sumattra-683x1024.jpg" alt="อ.ดร.ศุมรรษตรา">
                         <div class="faculty-info">
                             <div class="fname">อาจารย์ ดร. ศุมรรษตรา แสนวา</div>
                             <div class="feng">Lecturer Sumattra Saenwa, Ph.D., FHEA</div>
@@ -834,20 +926,19 @@ function renderContactFooter() {
                 <?php break;
 
             // ==========================================
-            // 6. นิสิต (ดึงจาก DB แบ่งตามชั้นปี)
+            // 7. นิสิต (ดึงจาก DB แบ่งตามชั้นปี)
             // ==========================================
             case 'student': ?>
                 <div class="card">
-                    <h4><?php echo $lang=='th' ? 'ทำเนียบนิสิต (ชั้นปี 1-4)' : 'Student Directory (Year 1-4)'; ?></h4>
+                    <h4>ทำเนียบนิสิต (ชั้นปี 1-4)</h4>
                     <?php for ($yr = 1; $yr <= 4; $yr++):
-                        $yr_label = $lang=='th' ? "ชั้นปีที่ $yr" : "Year $yr";
-                        $stu_stmt = $conn->prepare("SELECT * FROM student WHERE stu_year = ? ORDER BY stu_id ASC");
                         $yr_str   = (string)$yr;
+                        $stu_stmt = $conn->prepare("SELECT * FROM student WHERE stu_year = ? ORDER BY stu_id ASC");
                         $stu_stmt->bind_param("s", $yr_str);
                         $stu_stmt->execute();
                         $stu_result = $stu_stmt->get_result();
                     ?>
-                        <h5 class="faculty-section-title"><?php echo $yr_label; ?></h5>
+                        <h5 class="faculty-section-title">ชั้นปีที่ <?php echo $yr; ?></h5>
                         <?php if ($stu_result && $stu_result->num_rows > 0):
                             while ($s = $stu_result->fetch_assoc()): ?>
                                 <div class="faculty-item">
@@ -862,7 +953,7 @@ function renderContactFooter() {
                                 </div>
                             <?php endwhile;
                         else: ?>
-                            <p class="text-muted"><?php echo $lang=='th' ? 'ไม่มีข้อมูลนิสิตชั้นปีนี้' : 'No students found for this year'; ?></p>
+                            <p class="text-muted">ไม่มีข้อมูลนิสิตชั้นปีนี้</p>
                         <?php endif;
                     endfor; ?>
 
