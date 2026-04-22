@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 $host   = "127.0.0.1";
 $user   = "root";
 $pass   = "";
-$dbname = "is_internship";
+$dbname = "is_internships";
 $port   = 3306;
 
 $conn = new mysqli($host, $user, $pass, $dbname, $port);
@@ -206,7 +206,7 @@ function renderContactFooter() {
         .pr-post-date { font-size:11px; color:#cbd5e1; }
         .pr-post-body .pr-tags { color:#003366; font-size:11px; font-weight:500; letter-spacing:0.01em; }
         .pr-post-title { font-size:14px; font-weight:600; color:#1e293b; line-height:1.4; }
-        .pr-post-body .pr-text { font-size:13px; color:#64748b; line-height:1.6; white-space:pre-line; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+        .pr-post-body .pr-text { font-size:13px; color:#64748b; line-height:1.6; white-space:pre-line; display:-webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient:vertical; overflow:hidden; }
         .pr-post-body .pr-link { font-size:12px; color:#dc2626; text-decoration:none; font-weight:500; }
         .pr-post-body .pr-link:hover { text-decoration:underline; }
 
@@ -685,7 +685,7 @@ function renderContactFooter() {
                     <div class="team-grid">
 
                         <div class="team-card">
-                            <img class="team-card-img" src="memberpic/chorfon.png" alt="ช่อผกา"
+                            <img class="team-card-img" src="./memberpic/chorfon.png" alt="ช่อผกา"
                                  onerror="this.src='https://ui-avatars.com/api/?name=ช่อผกา&background=dc2626&color=fff&size=300'">
                             <div class="team-card-body">
                                 <div class="team-card-nickname">ช่อฝน · Chorfon</div>
@@ -699,7 +699,7 @@ function renderContactFooter() {
                         </div>
 
                         <div class="team-card">
-                            <img class="team-card-img" src="memberpic/nine.png" alt="ณฤเมธ"
+                            <img class="team-card-img" src="./memberpic/nine.png" alt="ณฤเมธ"
                                  onerror="this.src='https://ui-avatars.com/api/?name=ณฤเมธ&background=1e293b&color=fff&size=300'">
                             <div class="team-card-body">
                                 <div class="team-card-nickname">นาย · Nine</div>
@@ -713,7 +713,7 @@ function renderContactFooter() {
                         </div>
 
                         <div class="team-card">
-                            <img class="team-card-img" src="memberpic/ohm.png" alt="พรธนาศักดิ์"
+                            <img class="team-card-img" src="./memberpic/ohm.png" alt="พรธนาศักดิ์"
                                  onerror="this.src='https://ui-avatars.com/api/?name=พรธนาศักดิ์&background=003366&color=fff&size=300'">
                             <div class="team-card-body">
                                 <div class="team-card-nickname">โอม · Ohm</div>
@@ -727,7 +727,7 @@ function renderContactFooter() {
                         </div>
 
                         <div class="team-card">
-                            <img class="team-card-img" src="memberpic/mitr.png" alt="รพีภัทร"
+                            <img class="team-card-img" src="./memberpic/mitr.png" alt="รพีภัทร"
                                  onerror="this.src='https://ui-avatars.com/api/?name=รพีภัทร&background=0f766e&color=fff&size=300'">
                             <div class="team-card-body">
                                 <div class="team-card-nickname">มิตร · Mitr</div>
@@ -741,7 +741,7 @@ function renderContactFooter() {
                         </div>
 
                         <div class="team-card">
-                            <img class="team-card-img" src="memberpic/sundae.png" alt="อนุสรณ์"
+                            <img class="team-card-img" src="./memberpic/sundae.png" alt="อนุสรณ์"
                                  onerror="this.src='https://ui-avatars.com/api/?name=อนุสรณ์&background=a16207&color=fff&size=300'">
                             <div class="team-card-body">
                                 <div class="team-card-nickname">ซันเด · Sundae</div>
@@ -755,7 +755,7 @@ function renderContactFooter() {
                         </div>
 
                         <div class="team-card">
-                            <img class="team-card-img" src="memberpic/moowan.png" alt="อิสรีย์"
+                            <img class="team-card-img" src="./memberpic/moowan.png" alt="อิสรีย์"
                                  onerror="this.src='https://ui-avatars.com/api/?name=อิสรีย์&background=b91c1c&color=fff&size=300'">
                             <div class="team-card-body">
                                 <div class="team-card-nickname">หมูหวาน · Moowan</div>
@@ -976,4 +976,4 @@ function renderContactFooter() {
 <?php endif; ?>
 
 </body>
-</html
+</html>
