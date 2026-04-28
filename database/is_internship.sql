@@ -1,3 +1,4 @@
+-- ไฟล์ฐานข้อมูลหลักของระบบฝึกงาน
 -- MariaDB dump 10.19  Distrib 10.4.28-MariaDB, for osx10.10 (x86_64)
 --
 -- Host: localhost    Database: is_internship

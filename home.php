@@ -1,6 +1,6 @@
 <?php
 
-// เริ่มต้น session และเปิดการแสดง error เพื่อช่วยตอนพัฒนา
+// ไฟล์หลักของระบบ: เริ่มต้น session และเปิดการแสดง error เพื่อช่วยตอนพัฒนา
 session_start();
 ini_set('display_errors', '1');
 error_reporting(E_ALL);
