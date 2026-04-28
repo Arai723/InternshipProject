@@ -1,4 +1,4 @@
-<?php $contact = contactInfo(); ?>
+<?php $contact = getContactInfo(); ?>
 <div class="faculty-footer">
     <h3><?php echo e($contact['title']); ?></h3>
     <p>
@@ -9,4 +9,3 @@
         <?php echo e($contact['meta']); ?>
     </p>
 </div>
-

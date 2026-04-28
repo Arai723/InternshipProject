@@ -28,5 +28,5 @@
         <?php endif; ?>
     <?php endforeach; ?>
 
-    <?php render('partials/contact-footer'); ?>
+    <?php require __DIR__ . '/../includes/contact-footer.php'; ?>
 </div>

@@ -1,20 +1,12 @@
-<?php
-$currentUserRole = $currentUserRole ?? currentUserRole();
-$studentRequests = $studentRequests ?? array();
-$requestRows = $requestRows ?? array();
-$showStaffUpdated = !empty($showStaffUpdated);
-$showTeacherUpdated = !empty($showTeacherUpdated);
-?>
-
-<?php if ($showStaffUpdated): ?>
+<?php if (!empty($showStaffUpdated)): ?>
     <div class="alert-success">✔ อัปเดตสถานะเรียบร้อยแล้ว</div>
 <?php endif; ?>
 
-<?php if ($showTeacherUpdated): ?>
+<?php if (!empty($showTeacherUpdated)): ?>
     <div class="alert-success">✔ บันทึกผลการพิจารณาเรียบร้อยแล้ว</div>
 <?php endif; ?>
 
-<?php if ($currentUserRole === 'student'): ?>
+<?php if (currentUserRole() === 'student'): ?>
     <div class="card">
         <div class="card-header-flex">
             <div>
@@ -56,8 +48,8 @@ $showTeacherUpdated = !empty($showTeacherUpdated);
         </table>
     </div>
 
-    <?php render('partials/contact-footer'); ?>
-<?php elseif ($currentUserRole === 'staff'): ?>
+    <?php require __DIR__ . '/../includes/contact-footer.php'; ?>
+<?php elseif (currentUserRole() === 'staff'): ?>
     <div class="card">
         <h4>จัดการข้อมูลคำร้องทั้งหมด</h4>
         <p class="text-muted">เลือกสถานะใหม่แล้วกด "บันทึก" เพื่ออัปเดตทีละรายการ</p>
@@ -91,7 +83,7 @@ $showTeacherUpdated = !empty($showTeacherUpdated);
                                 <form method="POST" action="<?php echo e(homeUrl(array('page' => 'internship'))); ?>" class="inline-form">
                                     <input type="hidden" name="req_id" value="<?php echo e($row['req_id']); ?>">
                                     <select name="new_status" class="status-dropdown">
-                                        <?php foreach (statusMap() as $statusCode => $statusData): ?>
+                                        <?php foreach (getStatusOptions() as $statusCode => $statusData): ?>
                                             <option value="<?php echo e((string) $statusCode); ?>" <?php echo (int) $row['status_now'] === (int) $statusCode ? 'selected' : ''; ?>>
                                                 <?php echo e(statusOptionLabel($statusData)); ?>
                                             </option>
@@ -111,8 +103,8 @@ $showTeacherUpdated = !empty($showTeacherUpdated);
         </table>
     </div>
 
-    <?php render('partials/contact-footer'); ?>
-<?php elseif ($currentUserRole === 'teacher'): ?>
+    <?php require __DIR__ . '/../includes/contact-footer.php'; ?>
+<?php elseif (currentUserRole() === 'teacher'): ?>
     <div class="card">
         <h4>รายการคำร้องรอการอนุมัติ / บันทึกผล</h4>
 
@@ -166,10 +158,9 @@ $showTeacherUpdated = !empty($showTeacherUpdated);
         </table>
     </div>
 
-    <?php render('partials/contact-footer'); ?>
+    <?php require __DIR__ . '/../includes/contact-footer.php'; ?>
 <?php else: ?>
     <div class="card">
         <p>ไม่พบสิทธิ์การใช้งานของบัญชีนี้</p>
     </div>
 <?php endif; ?>
-

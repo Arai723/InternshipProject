@@ -9,7 +9,7 @@ $endDate = trim($_POST['end_date'] ?? '');
     <div class="card">
         <p>เฉพาะนิสิตเท่านั้นที่สามารถเข้าถึงหน้านี้ได้</p>
     </div>
-    <?php render('partials/contact-footer'); ?>
+    <?php require __DIR__ . '/../includes/contact-footer.php'; ?>
     <?php return; ?>
 <?php endif; ?>
 
@@ -59,5 +59,4 @@ $endDate = trim($_POST['end_date'] ?? '');
     </form>
 </div>
 
-<?php render('partials/contact-footer'); ?>
-
+<?php require __DIR__ . '/../includes/contact-footer.php'; ?>

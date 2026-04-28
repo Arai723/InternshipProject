@@ -21,48 +21,14 @@ function createDatabaseConnection(array $dbConfig)
 
 function t($key)
 {
-    global $appConfig;
+    global $texts, $lang;
 
-    $lang = $appConfig['lang'];
-
-    return $appConfig['texts'][$lang][$key] ?? $key;
+    return $texts[$lang][$key] ?? $key;
 }
 
 function e($value)
 {
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
-}
-
-function siteContent($key = null, $default = array())
-{
-    global $siteContent;
-
-    if ($key === null) {
-        return $siteContent;
-    }
-
-    return array_key_exists($key, $siteContent) ? $siteContent[$key] : $default;
-}
-
-function sidebarPages()
-{
-    global $appConfig;
-
-    return $appConfig['sidebar_pages'];
-}
-
-function statusMap()
-{
-    global $appConfig;
-
-    return $appConfig['status_map'];
-}
-
-function contactInfo()
-{
-    global $appConfig;
-
-    return $appConfig['contact'];
 }
 
 function homeUrl(array $params = array())
@@ -103,24 +69,9 @@ function resolveCurrentPage($page, array $allowedPages)
     return in_array($page, $allowedPages, true) ? $page : 'internship';
 }
 
-function pageViewFor($currentPage)
-{
-    $pageViews = array(
-        'internship' => 'pages/internship',
-        'request_form' => 'pages/request_form',
-        'pr' => 'pages/pr',
-        'about' => 'pages/about',
-        'course' => 'pages/course',
-        'teacher' => 'pages/teacher',
-        'student' => 'pages/student',
-    );
-
-    return $pageViews[$currentPage] ?? 'pages/internship';
-}
-
 function getStatusBadge($statusCode)
 {
-    $statusMap = statusMap();
+    global $statusMap;
     $statusCode = (int) $statusCode;
 
     if (!array_key_exists($statusCode, $statusMap)) {
@@ -137,6 +88,20 @@ function statusOptionLabel(array $statusData)
     return $statusData['option'] ?? $statusData['th'];
 }
 
+function getStatusOptions()
+{
+    global $statusMap;
+
+    return $statusMap;
+}
+
+function getContactInfo()
+{
+    global $contactInfo;
+
+    return $contactInfo;
+}
+
 function instagramIconSvg()
 {
     return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle></svg>';
@@ -147,12 +112,6 @@ function avatarFallbackUrl($name, $background, $size)
     return 'https://ui-avatars.com/api/?name=' . rawurlencode($name)
         . '&background=' . rawurlencode($background)
         . '&color=fff&size=' . (int) $size;
-}
-
-function render($view, array $data = array())
-{
-    extract($data, EXTR_SKIP);
-    require PROJECT_ROOT . '/views/' . $view . '.php';
 }
 
 function authenticateUser(mysqli $connection, $role, $username, $password)
@@ -293,38 +252,3 @@ function collectStudentsByYear(mysqli $connection, $maxYear)
 
     return $studentsByYear;
 }
-
-function preparePageData($currentPage, mysqli $connection, $formMsg = null)
-{
-    if ($currentPage === 'internship') {
-        $role = currentUserRole();
-        $data = array(
-            'currentUserRole' => $role,
-            'studentRequests' => array(),
-            'requestRows' => array(),
-            'showStaffUpdated' => isset($_GET['staff_updated']),
-            'showTeacherUpdated' => isset($_GET['teacher_updated']),
-        );
-
-        if ($role === 'student') {
-            $data['studentRequests'] = fetchStudentRequests($connection, currentUserId());
-        }
-
-        if ($role === 'staff' || $role === 'teacher') {
-            $data['requestRows'] = fetchAllRequests($connection);
-        }
-
-        return $data;
-    }
-
-    if ($currentPage === 'request_form') {
-        return array('formMsg' => $formMsg);
-    }
-
-    if ($currentPage === 'student') {
-        return array('studentsByYear' => collectStudentsByYear($connection, 4));
-    }
-
-    return array();
-}
-
