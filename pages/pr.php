@@ -1,4 +1,5 @@
 <?php
+// ข้อมูลข่าวและประชาสัมพันธ์ที่ต้องการโชว์ในหน้า PR
 $prPosts = array(
     array(
         'image_url' => '',
@@ -44,9 +45,11 @@ $prPosts = array(
 
 <div class="card" style="padding: 0; overflow: hidden;">
     <div class="pr-feed">
+        <?php // วนแสดงโพสต์ข่าวทีละรายการ ?>
         <?php foreach ($prPosts as $post): ?>
             <div class="pr-post">
                 <div class="pr-post-thumb">
+                    <?php // ถ้ามีรูปก็แสดงรูป ถ้าไม่มีก็ใช้ข้อความแทน ?>
                     <?php if (!empty($post['image_url'])): ?>
                         <img src="<?php echo e($post['image_url']); ?>" alt="<?php echo e($post['image_alt']); ?>">
                     <?php else: ?>

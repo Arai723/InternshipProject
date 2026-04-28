@@ -1,11 +1,16 @@
-<?php $studentsByYear = $studentsByYear ?? array(); ?>
+<?php
+// ถ้าไม่มีข้อมูลจาก home.php ให้เริ่มต้นเป็น array ว่างไว้ก่อน
+$studentsByYear = $studentsByYear ?? array();
+?>
 
 <div class="card">
     <h4>ทำเนียบนิสิต (ชั้นปี 1-4)</h4>
 
+    <?php // วนแสดงนิสิตแยกตามชั้นปี ?>
     <?php foreach ($studentsByYear as $year => $students): ?>
         <h5 class="faculty-section-title">ชั้นปีที่ <?php echo e((string) $year); ?></h5>
 
+        <?php // ถ้ามีข้อมูลในชั้นปีนั้นก็แสดงเป็นรายการการ์ด ?>
         <?php if (!empty($students)): ?>
             <?php foreach ($students as $student): ?>
                 <div class="faculty-item">

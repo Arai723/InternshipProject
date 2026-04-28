@@ -1,11 +1,14 @@
+<?php // แจ้งเตือนเมื่อเจ้าหน้าที่อัปเดตสถานะสำเร็จ ?>
 <?php if (!empty($showStaffUpdated)): ?>
     <div class="alert-success">✔ อัปเดตสถานะเรียบร้อยแล้ว</div>
 <?php endif; ?>
 
+<?php // แจ้งเตือนเมื่ออาจารย์บันทึกผลพิจารณาสำเร็จ ?>
 <?php if (!empty($showTeacherUpdated)): ?>
     <div class="alert-success">✔ บันทึกผลการพิจารณาเรียบร้อยแล้ว</div>
 <?php endif; ?>
 
+<?php // มุมมองของนิสิต: ดูคำร้องของตัวเองและปุ่มไปกรอกคำร้อง ?>
 <?php if (currentUserRole() === 'student'): ?>
     <div class="card">
         <div class="card-header-flex">
@@ -28,6 +31,7 @@
                 </tr>
             </thead>
             <tbody>
+                <?php // ถ้ามีคำร้องให้แสดงเป็นตาราง ถ้าไม่มีก็แสดงข้อความว่าง ?>
                 <?php if (!empty($studentRequests)): ?>
                     <?php foreach ($studentRequests as $request): ?>
                         <tr>
@@ -49,6 +53,7 @@
     </div>
 
     <?php require __DIR__ . '/../includes/contact-footer.php'; ?>
+<?php // มุมมองของเจ้าหน้าที่: ดูคำร้องทั้งหมดและเปลี่ยนสถานะได้ ?>
 <?php elseif (currentUserRole() === 'staff'): ?>
     <div class="card">
         <h4>จัดการข้อมูลคำร้องทั้งหมด</h4>
@@ -67,6 +72,7 @@
                 </tr>
             </thead>
             <tbody>
+                <?php // วนแสดงคำร้องทั้งหมดพร้อม dropdown สำหรับเปลี่ยนสถานะ ?>
                 <?php if (!empty($requestRows)): ?>
                     <?php foreach ($requestRows as $row): ?>
                         <tr>
@@ -83,6 +89,7 @@
                                 <form method="POST" action="<?php echo e(homeUrl(array('page' => 'internship'))); ?>" class="inline-form">
                                     <input type="hidden" name="req_id" value="<?php echo e($row['req_id']); ?>">
                                     <select name="new_status" class="status-dropdown">
+                                        <?php // โหลดตัวเลือกสถานะจากค่ากลางใน config ?>
                                         <?php foreach (getStatusOptions() as $statusCode => $statusData): ?>
                                             <option value="<?php echo e((string) $statusCode); ?>" <?php echo (int) $row['status_now'] === (int) $statusCode ? 'selected' : ''; ?>>
                                                 <?php echo e(statusOptionLabel($statusData)); ?>
@@ -104,6 +111,7 @@
     </div>
 
     <?php require __DIR__ . '/../includes/contact-footer.php'; ?>
+<?php // มุมมองของอาจารย์: ตรวจคำร้องและกดอนุมัติหรือไม่อนุมัติ ?>
 <?php elseif (currentUserRole() === 'teacher'): ?>
     <div class="card">
         <h4>รายการคำร้องรอการอนุมัติ / บันทึกผล</h4>
@@ -121,6 +129,7 @@
                 </tr>
             </thead>
             <tbody>
+                <?php // แสดงคำร้องทั้งหมดเพื่อใช้พิจารณา ?>
                 <?php if (!empty($requestRows)): ?>
                     <?php foreach ($requestRows as $row): ?>
                         <tr>
@@ -134,6 +143,7 @@
                             <td><?php echo e($row['req_date']); ?></td>
                             <td><?php echo getStatusBadge($row['status_now']); ?></td>
                             <td>
+                                <?php // อนุมัติได้เฉพาะคำร้องที่ยังอยู่สถานะเริ่มต้น ?>
                                 <?php if ((int) $row['status_now'] === 1): ?>
                                     <form method="POST" action="<?php echo e(homeUrl(array('page' => 'internship'))); ?>" class="inline-form">
                                         <input type="hidden" name="req_id" value="<?php echo e($row['req_id']); ?>">
@@ -160,6 +170,7 @@
 
     <?php require __DIR__ . '/../includes/contact-footer.php'; ?>
 <?php else: ?>
+    <?php // กันกรณี role ไม่ตรงกับที่ระบบรองรับ ?>
     <div class="card">
         <p>ไม่พบสิทธิ์การใช้งานของบัญชีนี้</p>
     </div>

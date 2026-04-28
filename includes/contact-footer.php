@@ -1,4 +1,7 @@
-<?php $contact = getContactInfo(); ?>
+<?php
+// ดึงข้อมูลติดต่อกลางมาแสดงซ้ำท้ายแต่ละหน้า
+$contact = getContactInfo();
+?>
 <div class="faculty-footer">
     <h3><?php echo e($contact['title']); ?></h3>
     <p>

@@ -1,5 +1,6 @@
 <?php
 
+// ตัวแปรกลางสำหรับข้อความผิดพลาดและค่าฟอร์มที่ต้องจำไว้
 $errorMsg = '';
 $formMsg = null;
 $loginForm = array(
@@ -7,15 +8,18 @@ $loginForm = array(
     'username' => '',
 );
 
+// ออกจากระบบแล้วกลับไปหน้าแรก
 if (isset($_GET['logout'])) {
     session_destroy();
     redirectTo();
 }
 
+// ถ้าไม่ใช่การส่งฟอร์มแบบ POST ก็ไม่ต้องทำ action ใด ๆ
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     return;
 }
 
+// จัดการฟอร์มเข้าสู่ระบบ
 if (isset($_POST['login'])) {
     $loginForm['role'] = trim($_POST['role'] ?? 'student');
     $loginForm['username'] = trim($_POST['username'] ?? '');
@@ -35,6 +39,7 @@ if (isset($_POST['login'])) {
     return;
 }
 
+// จัดการฟอร์มยื่นคำร้องของนิสิต
 if (isset($_POST['submit_request'])) {
     if (!isLoggedIn() || currentUserRole() !== 'student') {
         redirectTo();
@@ -50,6 +55,7 @@ if (isset($_POST['submit_request'])) {
     return;
 }
 
+// จัดการการอัปเดตสถานะจากฝั่งเจ้าหน้าที่
 if (isset($_POST['update_status'])) {
     if (!isLoggedIn() || currentUserRole() !== 'staff') {
         redirectTo(array('page' => 'internship'));
@@ -59,6 +65,7 @@ if (isset($_POST['update_status'])) {
     redirectTo(array('page' => 'internship', 'staff_updated' => 1));
 }
 
+// จัดการการอนุมัติหรือไม่อนุมัติจากฝั่งอาจารย์
 if (isset($_POST['teacher_action'])) {
     if (!isLoggedIn() || currentUserRole() !== 'teacher') {
         redirectTo(array('page' => 'internship'));
@@ -67,4 +74,3 @@ if (isset($_POST['teacher_action'])) {
     reviewTeacherRequest($conn, $_POST['req_id'] ?? 0, $_POST['teacher_action'] ?? '');
     redirectTo(array('page' => 'internship', 'teacher_updated' => 1));
 }
-

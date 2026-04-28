@@ -1,5 +1,6 @@
 <?php
 
+// สร้างการเชื่อมต่อฐานข้อมูลและตั้งค่า charset ให้รองรับภาษาไทย
 function createDatabaseConnection(array $dbConfig)
 {
     $connection = new mysqli(
@@ -19,6 +20,7 @@ function createDatabaseConnection(array $dbConfig)
     return $connection;
 }
 
+// ดึงข้อความตาม key ที่กำหนดจากชุดภาษา
 function t($key)
 {
     global $texts, $lang;
@@ -26,11 +28,13 @@ function t($key)
     return $texts[$lang][$key] ?? $key;
 }
 
+// ป้องกันอักขระพิเศษก่อนนำไปแสดงบนหน้าเว็บ
 function e($value)
 {
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 
+// สร้าง URL กลับมาที่ home.php พร้อมพารามิเตอร์ที่ต้องการ
 function homeUrl(array $params = array())
 {
     $query = http_build_query($params);
@@ -38,37 +42,44 @@ function homeUrl(array $params = array())
     return 'home.php' . ($query !== '' ? '?' . $query : '');
 }
 
+// เปลี่ยนหน้าไปยังปลายทางที่กำหนดแล้วหยุดการทำงานต่อ
 function redirectTo(array $params = array())
 {
     header('Location: ' . homeUrl($params));
     exit();
 }
 
+// ตรวจว่าผู้ใช้เข้าสู่ระบบแล้วหรือยัง
 function isLoggedIn()
 {
     return isset($_SESSION['user_id']);
 }
 
+// ดึง role ของผู้ใช้ปัจจุบัน
 function currentUserRole()
 {
     return $_SESSION['role'] ?? null;
 }
 
+// ดึงชื่อผู้ใช้ปัจจุบันจาก session
 function currentUserName()
 {
     return $_SESSION['user_name'] ?? '';
 }
 
+// ดึงรหัสผู้ใช้ปัจจุบันจาก session
 function currentUserId()
 {
     return $_SESSION['user_id'] ?? '';
 }
 
+// ตรวจว่าหน้าที่ขอมาอยู่ในรายการที่อนุญาตหรือไม่
 function resolveCurrentPage($page, array $allowedPages)
 {
     return in_array($page, $allowedPages, true) ? $page : 'internship';
 }
 
+// แปลงรหัสสถานะให้เป็น badge พร้อม class สี
 function getStatusBadge($statusCode)
 {
     global $statusMap;
@@ -83,11 +94,13 @@ function getStatusBadge($statusCode)
     return "<span class='badge-status {$status['class']}'>" . e($status['th']) . '</span>';
 }
 
+// เลือกข้อความที่ใช้แสดงใน dropdown สถานะ
 function statusOptionLabel(array $statusData)
 {
     return $statusData['option'] ?? $statusData['th'];
 }
 
+// ส่งรายการสถานะทั้งหมดกลับไปให้หน้าใช้งาน
 function getStatusOptions()
 {
     global $statusMap;
@@ -95,6 +108,7 @@ function getStatusOptions()
     return $statusMap;
 }
 
+// ส่งข้อมูลติดต่อกลับไปให้ส่วน footer ใช้งาน
 function getContactInfo()
 {
     global $contactInfo;
@@ -102,11 +116,13 @@ function getContactInfo()
     return $contactInfo;
 }
 
+// ไอคอน Instagram แบบฝังในโค้ดเพื่อเรียกใช้ซ้ำ
 function instagramIconSvg()
 {
     return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle></svg>';
 }
 
+// สร้าง URL รูป avatar สำรองเมื่อไม่มีรูปจริง
 function avatarFallbackUrl($name, $background, $size)
 {
     return 'https://ui-avatars.com/api/?name=' . rawurlencode($name)
@@ -114,6 +130,7 @@ function avatarFallbackUrl($name, $background, $size)
         . '&color=fff&size=' . (int) $size;
 }
 
+// ตรวจสอบข้อมูล login ตาม role ที่ผู้ใช้เลือก
 function authenticateUser(mysqli $connection, $role, $username, $password)
 {
     $queries = array(
@@ -143,6 +160,7 @@ function authenticateUser(mysqli $connection, $role, $username, $password)
     return $result->fetch_assoc();
 }
 
+// บันทึกคำร้องฝึกงานของนิสิตพร้อมตรวจข้อมูลพื้นฐาน
 function submitInternshipRequest(mysqli $connection, $studentId, $companyName, $startDate, $endDate)
 {
     if ($companyName === '' || $startDate === '' || $endDate === '') {
@@ -170,6 +188,7 @@ function submitInternshipRequest(mysqli $connection, $studentId, $companyName, $
     return array('type' => 'error', 'text' => 'Database error: ' . $connection->error);
 }
 
+// อัปเดตสถานะของคำร้องตามรหัสคำร้องที่ระบุ
 function updateRequestStatus(mysqli $connection, $requestId, $newStatus)
 {
     $statement = $connection->prepare('UPDATE request SET status_now = ? WHERE req_id = ?');
@@ -185,6 +204,7 @@ function updateRequestStatus(mysqli $connection, $requestId, $newStatus)
     return $statement->execute();
 }
 
+// เปลี่ยน action ของอาจารย์ให้เป็นรหัสสถานะจริงก่อนบันทึก
 function reviewTeacherRequest(mysqli $connection, $requestId, $action)
 {
     $newStatus = $action === 'approve' ? 2 : 9;
@@ -192,6 +212,7 @@ function reviewTeacherRequest(mysqli $connection, $requestId, $action)
     return updateRequestStatus($connection, $requestId, $newStatus);
 }
 
+// แปลงผลลัพธ์จากฐานข้อมูลให้เป็น array ที่ใช้งานง่าย
 function fetchRows($result)
 {
     if (!$result) {
@@ -201,6 +222,7 @@ function fetchRows($result)
     return $result->fetch_all(MYSQLI_ASSOC);
 }
 
+// ดึงคำร้องทั้งหมดของนิสิตคนปัจจุบัน
 function fetchStudentRequests(mysqli $connection, $studentId)
 {
     $statement = $connection->prepare(
@@ -220,6 +242,7 @@ function fetchStudentRequests(mysqli $connection, $studentId)
     return fetchRows($statement->get_result());
 }
 
+// ดึงคำร้องทั้งหมดในระบบสำหรับ staff และ teacher
 function fetchAllRequests(mysqli $connection)
 {
     $result = $connection->query('SELECT * FROM request ORDER BY req_id DESC');
@@ -227,6 +250,7 @@ function fetchAllRequests(mysqli $connection)
     return fetchRows($result);
 }
 
+// ดึงข้อมูลนิสิตตามชั้นปีที่ระบุ
 function fetchStudentsByYear(mysqli $connection, $year)
 {
     $yearString = (string) $year;
@@ -242,6 +266,7 @@ function fetchStudentsByYear(mysqli $connection, $year)
     return fetchRows($statement->get_result());
 }
 
+// รวมข้อมูลนิสิตทุกชั้นปีไว้ในตัวแปรเดียว
 function collectStudentsByYear(mysqli $connection, $maxYear)
 {
     $studentsByYear = array();

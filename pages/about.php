@@ -1,6 +1,8 @@
 <?php
+// ข้อความแนะนำทีมผู้พัฒนาที่แสดงช่วงต้นหน้า
 $aboutIntro = 'พวกเราทีมพัฒนาระบบ IS Internship จากนิสิตชั้นปีที่ 2 คณะมนุษยศาสตร์ สาขาวิชาสารสนเทศศึกษา มหาวิทยาลัยศรีนครินทรวิโรฒ<br>เพื่อรองรับการจัดการข้อมูลและติดตามสถานะการฝึกงานของนิสิตในสาขาเรา พวกเราหวังอย่างยิ่งว่า ระบบที่เราทำจะมีส่วนช่วยในการพัฒนาองกรณ์ไปในทางที่ดีขึ้น';
 
+// ข้อมูลสมาชิกทีมสำหรับสร้างการ์ดแนะนำแต่ละคน
 $teamMembers = array(
     array(
         'image' => 'assets/images/chorfon.png',
@@ -70,6 +72,7 @@ $teamMembers = array(
     <div class="about-intro"><?php echo $aboutIntro; ?></div>
 
     <div class="team-grid">
+        <?php // วนแสดงข้อมูลสมาชิกทีละคนในรูปแบบการ์ด ?>
         <?php foreach ($teamMembers as $member): ?>
             <div class="team-card">
                 <img
@@ -85,6 +88,7 @@ $teamMembers = array(
                     <div class="team-card-id"><?php echo e($member['student_id']); ?></div>
 
                     <a href="<?php echo e($member['instagram_url']); ?>" target="_blank" class="team-card-ig">
+                        <?php // ใช้ไอคอน SVG กลางเพื่อให้หน้าตาเหมือนกันทุกการ์ด ?>
                         <?php echo instagramIconSvg(); ?>
                         <?php echo e($member['instagram_handle']); ?>
                     </a>

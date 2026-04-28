@@ -1,4 +1,5 @@
 <?php
+// ข้อมูลหลักสูตรทั้งหมดของหน้า "หลักสูตร"
 $course = array(
     'title' => 'หลักสูตรศิลปศาสตรบัณฑิต สาขาวิชาสารสนเทศศึกษา',
     'quote' => 'ปรัชญา: "สารสนเทศสร้างปัญญา ปัญญาสร้างคุณค่าให้สังคม"',
@@ -62,12 +63,15 @@ $course = array(
         <div class="course-item"><strong>รหัสหลักสูตร:</strong> <?php echo e($course['program_code']); ?></div>
     </div>
 
+    <?php // วนแสดงหมวดเนื้อหาของหลักสูตรทีละหัวข้อ ?>
     <?php foreach ($course['sections'] as $section): ?>
         <div class="course-section">
             <h3><?php echo e($section['title']); ?></h3>
 
+            <?php // วนแสดงรายละเอียดในแต่ละหมวดย่อย ?>
             <?php foreach ($section['items'] as $item): ?>
                 <?php
+                // รวม class เพิ่มเติมตามประเภทข้อมูลที่ต้องการแสดง
                 $classes = array('course-item');
                 if (!empty($item['indent'])) {
                     $classes[] = 'text-indent';
@@ -78,8 +82,10 @@ $course = array(
                 ?>
 
                 <?php if (($item['tag'] ?? '') === 'p'): ?>
+                    <?php // ข้อความที่ต้องการแสดงเป็นย่อหน้าเต็ม ?>
                     <p class="<?php echo e(implode(' ', $classes)); ?>"><?php echo e($item['text']); ?></p>
                 <?php else: ?>
+                    <?php // ข้อความทั่วไปที่อาจมี label นำหน้า ?>
                     <div class="<?php echo e(implode(' ', $classes)); ?>">
                         <?php if (!empty($item['label'])): ?>
                             <strong><?php echo e($item['label']); ?>:</strong>

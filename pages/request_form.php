@@ -1,10 +1,12 @@
 <?php
+// จำค่าที่ผู้ใช้กรอกไว้เมื่อฟอร์มยังส่งไม่ผ่าน
 $formMsg = $formMsg ?? null;
 $companyName = trim($_POST['com_name'] ?? '');
 $startDate = trim($_POST['start_date'] ?? '');
 $endDate = trim($_POST['end_date'] ?? '');
 ?>
 
+<?php // หน้านี้อนุญาตเฉพาะนิสิตเท่านั้น ?>
 <?php if (currentUserRole() !== 'student'): ?>
     <div class="card">
         <p>เฉพาะนิสิตเท่านั้นที่สามารถเข้าถึงหน้านี้ได้</p>
@@ -21,10 +23,12 @@ $endDate = trim($_POST['end_date'] ?? '');
 
     <hr class="divider">
 
+    <?php // แสดงผลลัพธ์หลังส่งฟอร์ม เช่น สำเร็จหรือข้อมูลไม่ครบ ?>
     <?php if (!empty($formMsg)): ?>
         <div class="alert-<?php echo e($formMsg['type']); ?>"><?php echo e($formMsg['text']); ?></div>
     <?php endif; ?>
 
+    <?php // ฟอร์มยื่นคำร้องฝึกงานของนิสิต ?>
     <form method="POST" action="<?php echo e(homeUrl(array('page' => 'request_form'))); ?>" class="submit-form">
         <div class="form-row">
             <div class="form-group-half">

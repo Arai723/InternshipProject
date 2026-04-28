@@ -1,4 +1,5 @@
 <?php
+// ข้อมูลคณาจารย์ที่ใช้แสดงในหน้าหลักสูตร
 $teacherSections = array(
     array(
         'title' => 'คณะกรรมการหลักสูตร',
@@ -80,9 +81,11 @@ $teacherSections = array(
 <div class="card">
     <h4>คณาจารย์ประจำหลักสูตร</h4>
 
+    <?php // วนตามหมวดของคณาจารย์ เช่น กรรมการหลักสูตร หรือผู้ช่วยศาสตราจารย์ ?>
     <?php foreach ($teacherSections as $section): ?>
         <h5 class="faculty-section-title"><?php echo e($section['title']); ?></h5>
 
+        <?php // วนแสดงสมาชิกภายในแต่ละหมวด ?>
         <?php foreach ($section['members'] as $member): ?>
             <div class="faculty-item">
                 <img src="<?php echo e($member['image']); ?>" alt="<?php echo e($member['alt']); ?>">

@@ -1,4 +1,5 @@
 <?php
+// จำค่าที่ผู้ใช้กรอกไว้เพื่อไม่ต้องเลือกใหม่เมื่อ login ไม่ผ่าน
 $selectedRole = $loginForm['role'] ?? 'student';
 $username = $loginForm['username'] ?? '';
 ?>
@@ -11,9 +12,11 @@ $username = $loginForm['username'] ?? '';
         </div>
 
         <?php if (!empty($errorMsg)): ?>
+            <?php // แสดงข้อความแจ้งเตือนเมื่อเข้าสู่ระบบไม่สำเร็จ ?>
             <div class="alert-error"><?php echo e($errorMsg); ?></div>
         <?php endif; ?>
 
+        <?php // ฟอร์มเข้าสู่ระบบหลักของระบบ ?>
         <form method="POST" action="<?php echo e(homeUrl()); ?>" class="login-form">
             <div class="role-selector">
                 <label><input type="radio" name="role" value="student" <?php echo $selectedRole === 'student' ? 'checked' : ''; ?>> <?php echo e(t('role_student')); ?></label>
@@ -35,4 +38,3 @@ $username = $loginForm['username'] ?? '';
         </form>
     </div>
 </div>
-
